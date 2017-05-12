@@ -1,0 +1,36 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+            <a href="{% url 'sbhs_server.pages.views.index' %}" class="brand">Single Board Heater System Lab</a>
+
+            <ul class="nav pull-right">
+                {% if user.is_authenticated %}
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Welcome, {{ user.name }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                        <li><a href="#passwordModal" role="button" data-toggle="modal">Change Password</a></li>
+                        <li><a href="#machineModal" role="button" data-toggle="modal">Request machine change</a></li>
+                        <li><a href="{% url 'sbhs_server.account.views.logout' %}">Logout</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <li><a href="{% url 'sbhs_server.account.views.index' %}">Login / Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    <div class="navbar-inner">
+        <div class="container">
+            <ul class="nav pull-right">
+                <li><a href="{% url 'sbhs_server.pages.views.info' %}">SBHS InfoCentre</a></li>
+                <li><a href="http://sbhs.os-hardware.in/downloads" target="_blank">Downloads</a></li>
+                <li><a href="{% url 'sbhs_server.pages.views.theory' %}">Theory</a></li>
+                <li><a href="{% url 'sbhs_server.pages.views.procedure' %}">Procedure</a></li>
+                <li><a href="{% url 'sbhs_server.pages.views.experiments' %}">Experiments</a></li>
+                <li><a href="{% url 'sbhs_server.pages.views.quiz' %} ">Quiz</a></li>
+                <li><a href="{% url 'sbhs_server.pages.views.feedback' %}">Feedback / Contact Us</a></li> 
+                <li><a href="{% url 'sbhs_server.pages.views.about' %}">About Us</a></li>                
+            </ul>
+        </div>
+    </div>    
+</div>

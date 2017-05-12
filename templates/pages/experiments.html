@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        {% if user.is_authenticated %}
+        {% include 'account/sub_nav.html' %}
+        {% endif %}
+        <div class="span12">
+            <h2>Experiments</h2>            
+                <br>
+		<br>
+		<p><h4>
+                	<strong>List of experiments:</strong>
+                </h4>
+                    <p>
+                        <ol>
+                            <li>Identification of Transfer Function of a Single Board Heater System through Step Response
+
+Experiment</li>
+                            <li>Identification of Transfer Function of a Single Board Heater System through Ramp Response
+
+Experiment</li>
+                            <li>Frequency Response Analysis of a Single Board Heater System by the Application of Sine Wave</li>
+                            <li>Controlling Single Board Heater System using PID controller</li>
+                            <li>Two Degrees of Freedom (2­DOF) Controller</li>
+                            <li>PRBS Modeling and Implementation of Pole Placement Controller</li>
+                            <li>Implementing Internal Model Controller for First Order System on a Single Board Heater System</li>
+                            <li>Design and Implementation of Self Tuning PI and PID Controllers on Single Board Heater System</li>
+                            <li>Model Predictive Control in Single Board Heater System using SCILAB</li> 
+                        </ol>
+                    </p></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include "account/sub_nav.html" %}
+        <div class="span12">
+        {% include "admin/sub_nav.html" %}
+        </div>
+    </div>
+    <div class="row">
+        {% for b in boards %}
+        <div class="span4" style="text-align: center; outline: 1px solid black">
+            <img src="{% static b.image_link %}" alt="{{ b.mid }}" style="width:90%;">
+            <br>
+            Board MID: {{ b.mid }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

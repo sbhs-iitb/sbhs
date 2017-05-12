@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include "account/sub_nav.html" %}
+        <div class="span12">
+            {% include "admin/sub_nav.html" %}
+            <table class="table table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Slot</th>
+                        <th>Board</th>
+                        <th>User</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in bookings %}
+                    <tr>
+                        <td>{{ b.booking_date }}</td>
+                        <td>{{ b.slot }}</td>
+                        <td>{{ b.account.board.mid }}</td>
+                        <td>{{ b.account.name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

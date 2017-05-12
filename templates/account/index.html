@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="span5">
+            <h2>Login</h2>
+            <br>
+            <form action="{% url 'sbhs_server.account.views.login' %}" method="POST">
+                {% csrf_token %}
+                <label for="login_username">Username</label>
+                <input type="text" name="username" id="login_username" required>
+                <br>
+                <label for="login_password">Password</label>
+                <input type="password" name="password" id="login_password" required>
+                <br>
+                <input type="submit" class="btn btn-primary" value="Login">
+                &nbsp;&nbsp;<a href="{% url 'sbhs_server.password.views.new' %}">Forgot Password?</a>
+            </form>
+        </div>
+        <div class="span5 pull-right">
+            <h2>Create Account</h2>
+            <form action="{% url 'sbhs_server.account.views.create' %}" method="POST">
+                {% csrf_token %}
+                <label for="name">Name</label>
+                <input type="text" name="name" id="name" required>
+                <br>
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" required>
+                <br>
+                <label for="username">Enter a username</label>
+                <input type="text" name="username" id="username" required>
+                <br>
+                <label for="roll_number">Roll No.</label>
+                <input type="text" name="roll_number" id="roll_number" required>
+                <br>
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" required>
+                <br>
+                <label for="confirm">Confirm Password</label>
+                <input type="password" name="confirm" id="confirm" required>
+                <br>
+                <label for="institute">Institute</label>
+                <input type="text" name="institute" id="institute" required>
+                <br>
+                <label for="department">Department</label>
+                <input type="text" name="department" id="department" required>
+                <br>
+                <label for="position">Position</label>
+                <input type="text" name="position" id="position" required>
+                <br>
+
+                <input type="submit" class="btn btn-inverse" value="Create Account">
+            </form>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

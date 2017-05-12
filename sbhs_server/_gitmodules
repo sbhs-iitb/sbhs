@@ -1,0 +1,8 @@
+[submodule "client_static"]
+        path = client_static
+        url = https://bitbucket.org/SBHS-virtual-labs/client_downloads.git
+[submodule "sbhs_server/server_private_files"]
+        path = sbhs_server/server_private_files
+        url = https://bitbucket.org/SBHS-virtual-labs/server_private_files.git
+
+

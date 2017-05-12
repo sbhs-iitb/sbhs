@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include "account/sub_nav.html" %}
+        <script>
+        document.getElementById("download-log-nav").classList.add("active");
+        </script>
+        <div class="span12">
+        <h3>Download previous log files</h3>
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Slot timings</th>
+                    <th>Filename</th>
+                    <th>Download</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for e in experiments %}
+                <tr>
+                    <td>{{ e.booking.start_time|date:"M d, Y" }}</td>
+                    <td>{{ e.booking.slot }}</td>
+                    <td>{{ e.logname }}</td>
+                    <td><a href="{% url 'sbhs_server.experiment.views.download_log' e.id e.logname %}" target="_blank">Download</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block headerfiles %}
+<script src="{% static 'js/dygraph-combined.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include "account/sub_nav.html" %}
+        <div class="span12">
+            {% include "admin/sub_nav.html" %}
+            <h2>SBHS MID: {{ mid }} <small>Profile for past {{ delta_T }} instances</small></h2>
+            <h3>Heat</h3>
+            <div id="heat" style="width:800px; height: 80px"></div>
+            <h3>Fan</h3>
+            <div id="fan" style="width:800px; height: 80px"></div>
+            <h3>Temperature</h3>
+            <div id="temp" style="width:800px; height: 80px"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function(){
+    var h = new Dygraph(
+        document.getElementById("heat"),
+        "{{ heat }}",
+        {
+            valueRange: [0,100]
+        }
+    );
+    var f = new Dygraph(
+        document.getElementById("fan"),
+        "{{ fan }}",
+        {
+            valueRange: [0,100]
+        }
+    );
+    var t = new Dygraph(
+        document.getElementById("temp"),
+        "{{ temp }}"
+    );
+})();
+</script>
+{% endblock %}

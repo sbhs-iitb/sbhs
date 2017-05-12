@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block headerfiles %}
+<script src="{% static "js/bootstrap-datepicker.js" %}"></script>
+<link rel="stylesheet" href="{% static "css/datepicker.css" %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include "account/sub_nav.html" %}
+        <script>
+        document.getElementById("book-slot-nav").classList.add("active");
+        </script>
+        <div class="span12">
+            <h3>Book slot</h3>
+            {% if cur_slots|length > 0 %}
+            <h4>Current slot {{ cur_slots.0 }} is vacant</h4>
+            <form action="{% url 'sbhs_server.slot.views.create' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="slot" value="{{ cur_slots.0.id }}">
+                <input type="hidden" name="date" value="CURRENT">
+                <input type="submit" value="Book now" class="btn btn-primary">
+            </form>
+            {% endif %}
+            <br><br>
+            <h4>Book future slots</h4>
+            <form action="{% url 'sbhs_server.slot.views.create' %}" method="POST">
+                {% csrf_token %}
+                <label for="date">Booking date</label> <br>
+                <div class="input-append date" id="dp1" data-date="{{ nowdate }}" data-date-format="yyyy-mm-dd">
+                    <input name="date" id="date" class="span2" size="16" type="text" value="{{ nowdate }}" readonly>
+                    <span class="add-on"><i class="icon-calendar"></i></span>
+                </div>
+                <div id="slotTimingWrap">
+                    <label for="slot">Free slot timings</label>
+                    <select name="slot" id="slot">
+                    {% for s in all_slots %}
+                        <option value="{{ s.id }}">{{ s }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <br>
+                <input type="submit" value="Book this slot" class="btn">
+            </form>
+        </div>
+    </div>    
+</div>
+<script>
+(function(){
+    $("#date").val("{{ nowdate }}");
+    var nowTemp = new Date();
+    var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+     
+    var DP1 = $('#dp1').datepicker({
+        onRender: function(date) {
+            return date.valueOf() < now.valueOf() ? 'disabled' : '';
+        }
+    }).on('changeDate', function(ev) {
+        var newDate = new Date(ev.date);
+        var string = newDate.getFullYear() + "-" + (newDate.getMonth() + 1) + "-" + newDate.getDate();
+        $.ajax({
+            url: "{% url 'sbhs_server.slot.views.show' '' %}" + string,
+            success: function(msg) {
+                $("#slotTimingWrap").html(msg);
+            }
+        })
+    }).data('datepicker');
+})();
+</script>
+{% endblock %}

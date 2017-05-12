@@ -1,0 +1,22 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% if user.is_authenticated %}
+        {% include 'account/sub_nav.html' %}
+        {% endif %}
+        <div class="span12">
+            <h2>Feedback / Contact Us</h2>
+            <br>
+	    <br>
+	    <p>
+            <h5>Write a mail to <a href="mailto:sbhs@os-hardware.in">sbhs[at]os-hardware[dot]in</a> to provide a feedback on SBHS virtual lab experience. If you have any questions, please use the <a href="http://sbhs.os-hardware.in/forum" target="_blank">forum</a>.
+            </h5>
+	    </p>
+            <br>           
+        </div>
+    </div>
+</div>
+{% endblock %}

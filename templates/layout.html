@@ -1,0 +1,40 @@
+{% load staticfiles %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Single Board Heater System &middot; Virtual Labs</title>
+    <link rel="shortcut icon" href="{% static 'img/favicon.ico' %}">
+    <link rel="stylesheet" href="{% static "css/bootstrap.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/bootstrap-responsive.min.css" %}">
+    <script src="{% static "js/jquery-latest.min.js" %}"></script>
+    <script src="{% static "js/bootstrap.min.js" %}"></script>
+    {% block headerfiles %}
+    {% endblock %}
+    <style>
+    html { margin: 0; height: 100%; }
+    body { padding-top: 70px; position: relative; margin: 0; min-height: 88%; }
+    </style>
+</head>
+<body>
+    
+    {% include 'nav.html' %}
+    {% if messages %}
+    <div class="container">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">{{ message|safe }}
+            <a class="close" data-dismiss="alert" href="#">&times;</a></div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+    <br><br><br>
+    {% include 'footer.html' %}
+    {% include 'modals.html' %}
+    <script>
+    $(".alert").alert();
+    </script>
+</body>
+</html>

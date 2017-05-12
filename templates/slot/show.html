@@ -1,0 +1,6 @@
+<label for="future_slot">Free slot timings</label>
+<select name="slot" id="future_slot">
+{% for s in all_slots %}
+    <option value="{{ s.id }}">{{ s }}</option>
+{% endfor %}
+</select>

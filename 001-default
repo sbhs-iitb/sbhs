@@ -1,0 +1,18 @@
+<VirtualHost *:80>
+    ServerAdmin webmaster@localhost
+    ServerName vlabs.iitb.ac.in
+
+    WSGIDaemonProcess sbhs_vlabs user=vlabs python-path=/home/vlabs/sbhs_vlabs/sbhs/sbhs_server/:/home/vlabs/sbhs_vlabs/sbhs/lib/python2.7/site-packages
+    WSGIProcessGroup sbhs_vlabs
+
+    WSGIScriptAlias /sb /home/vlabs/sbhs_vlabs/sbhs/sbhs_server/index.wsgi
+    Alias /sb/static/ /home/vlabs/sbhs_vlabs/sbhs/sbhs_server/production_static_files/
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    LogLevel info
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+
+    RewriteEngine On
+    RewriteRule ^/sbhs(.*) /sb$1 [PT]
+</VirtualHost>

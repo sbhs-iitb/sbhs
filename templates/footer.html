@@ -1,0 +1,45 @@
+<div class="wrapper" style="position: absolute; bottom: 0; right: 0; width: 100%;">
+    <div class="container">
+        <div class="navbar">
+        <ul class="nav pull-right">
+            <li><a href="#"><b>External links</b></a></li>
+            <li><a href="http://www.iitb.ac.in/" target="_blank">IIT Bombay</a></li>
+            <li><a href="http://www.vlab.co.in/" target="_blank">Virtual Labs</a></li>
+            <li><a href="http://www.spoken-tutorial.org/" target="_blank">Spoken Tutorials</a></li>
+            <li><a href="http://www.co-learn.in/" target="_blank">Co-learn</a></li>
+            <li><a href="http://www.nex-robotics.com/" target="_blank">Nex Robotics</a></li>
+            <li><a href="http://sbhs.os-hardware.in/forum" target="_blank">SBHS Forum</a></li>
+            <li><a href="http://www.cdeep.iitb.ac.in/" target="_blank">CDEEP</a></li>
+        </ul>
+        </div>
+        <small style="float: right; font-size: 10px; margin: -8px 10px 2px 0;">Server time: <span id="timer">{% now "jS M Y h:i:s A" %}</span>. Copyright &copy; 2014 <a href="www.iitb.ac.in" target="_blank">www.iitb.ac.in</a>. Designed and hosted by <a href="http://www.cdeep.iitb.ac.in/" target="_blank">Automation Lab, CDEEP, IIT Bombay</a></small>
+    </div>
+</div>
+
+<script>
+(function(){
+    var date_string = "{% now 'Y-m-d H:i:s' %}";
+    var a = date_string.split(/[^0-9]/);
+    for(i=0;i<6;i++){a[i]=parseInt(a[i])}
+    window.date = new Date(a[0],a[1]-1,a[2],a[3],a[4],a[5]);
+    window.monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    window.ordinalize = function (i) {
+        var j = i % 10;
+        if (j == 1 && i != 11) return i + "st";
+        if (j == 2 && i != 12) return i + "nd";
+        if (j == 3 && i != 13) return i + "rd";
+        return i + "th";
+    }
+    window.num_padding = function(i) {
+        return i < 10 ? "0" + i : i;
+    }
+
+    var timer = function() {
+        window.date.setSeconds(window.date.getSeconds() + 1);
+        str = window.ordinalize(window.date.getDate()) + " " + window.monthNames[window.date.getMonth()] + " " + window.date.getFullYear() + " " + window.date.toLocaleTimeString().toUpperCase();
+        document.getElementById("timer").innerHTML = str;
+    }
+
+    setInterval(timer, 1000);
+})();
+</script>

@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include "account/sub_nav.html" %}
+        <script>
+        document.getElementById("home-nav").classList.add("active");
+        </script>
+        <div class="span12">
+            <h2>Welcome to Single Board Heater System Lab</h2>
+            <br>
+            You can:
+            <ul>
+                <li>book your slot by going to the "Book slot" section above</li>
+                <li>download the client code for experiments using the download link above</li>
+                <li>download your previous experiment logs by going to "Download log files" section above</li>
+                <li>see the experiment video by going to "Show video" section above</li>
+            </ul>
+        </div>
+    </div>    
+</div>
+{% endblock %}

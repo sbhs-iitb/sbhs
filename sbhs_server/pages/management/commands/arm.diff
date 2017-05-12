@@ -1,0 +1,14 @@
+--- a/sbhs_server/pages/management/commands/zip_client.py
++++ b/sbhs_server/pages/management/commands/zip_client.py
+@@ -33,6 +33,10 @@ class Command(BaseCommand):
+             run_file_dirpath = os.path.join(dirpath, "run_file")
+ 
+             os.mkdir(tmp_dirpath)
++            for root, dirs, files in os.walk(dirpath):
++                for f in files:
++                    shutil.copy(os.path.join(dirpath, f), os.path.join(tmp_dirpath, f))
++
+             distutils.dir_util.copy_tree(scilab_codes_dirpath, tmp_dirpath)
+             try:
+                 shutil.rmtree(tmp_dirpath + "/" + scilab_codes_dirname + "/.git")
+

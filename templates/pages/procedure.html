@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        {% if user.is_authenticated %}
+        {% include 'account/sub_nav.html' %}
+        {% endif %}
+        <div class="span12">
+            <h2>Procedure</h2>            
+                <h4>
+                	<strong>See the spoken tutorial on how to use SBHS virtual labs</strong>
+                </h4>
+                    <center>
+                        <div class="embed-responsive embed-responsive-16by9">
+								<iframe width="500" height="300" src="https://www.youtube.com/embed/Ax7lYwQctog" frameborder="0" allowfullscreen></iframe>
+                        </div>                            
+                    </center><br>
+                        <h4>
+                            <strong>For more information please read the pdf</strong>
+                        </h4>
+                    <center>
+                    	<div class="embed-responsive embed-responsive-16by9">
+                        	<iframe src="{% static 'data/procedure.pdf' %}" width="100%" height="900px"></iframe><br>
+                        </div>
+                    </center> 
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% if user.is_authenticated %}
+        {% include 'account/sub_nav.html' %}
+        {% endif %}
+        <div class="span12">
+            <div class="page-header">
+                <h1>Welcome to Single Board Heater System Lab!</h1>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span8">
+            <p style="text-align:justify">
+                Welcome to SBHS Virtual Labs. Here you can remotely access the Single Board Heater Systems (SBHS) hosted at IIT Bombay, and perform various experiments using it.
+                <br><br>
+                The virtual Lab for SBHS is made using free and open source software. Python-MySQL is used for web frontend and database. It targets at using Scilab at the client end to carry out various control experiments on SBHS. Python Scripts are used for communicating the data to and fro from the server and client. This Virtual lab interface can be accessed from both inside as well as outside IIT Bombay.
+                <br><br>
+                This virtual lab interface for SBHS at IIT Bombay was successfully used by Prof.Kannan Moudgalya for CL417 - Process Control Course, CL692 - Digital Control Course and by Prof. Kavi Arya for Embedded Systems Course. A good documentation of the hardware side of SBHS is also available on the Downloads page. We also have an active forum so that your questions regarding this project are easily answered. Apart from this, we also provide you with scilab code of various control strategies implemented on SBHS. After getting a feel for SBHS using virtual labs, one can even purchase an SBHS and experiment with it locally. For purchasing SBHS, please visit <a href="http://www.nex-robotics.com/" target="_blank">http://www.nex-robotics.com/</a>
+                <br><br>
+                Following are the steps to be followed for using virtual labs. </p>
+
+                <ol>
+                    <li>From the Download Section, download and install Scilab.</li>
+                    <li>Register and book slot from this website.</li>
+                    <li>Run the client application for establishing communication between server and your computer.</li>
+                    <li>Launch Scilab, load the appropriate code and start experimenting remotely!</li>
+                </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}

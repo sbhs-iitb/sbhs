@@ -1,0 +1,34 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% if user.is_authenticated %}
+        {% include 'account/sub_nav.html' %}
+        {% endif %}
+        <div class="span12">
+            <h2>Contact Us</h2>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td>Prof. Kannan Moudgalya</td>
+                        <td>kannan@iitb.ac.in</td>
+                    </tr>
+                    <tr>
+                        <td>Rupak Rokade</td>
+                        <td>rupakrokade@gmail.com</td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <br>
+            <h2>SBHS Discussion Forum</h2>
+             The SBHS Community has maintained a discussion forum and exhaustive documentation to answer basic questions about SBHS and SBHS Vlabs.
+        </div>
+    </div>
+</div>
+{% endblock %}

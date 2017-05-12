@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="span12">
+            <h1>Internal server error <small>Error 500</small></h1>
+            <br>
+            <p>Something went wrong on the server. We are correcting the issue. Contact vlabs team if the problem persists. Please click <a href="{% url 'sbhs_server.account.views.index' %}">here</a> to go to the homepage.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

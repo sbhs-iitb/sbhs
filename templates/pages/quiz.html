@@ -1,0 +1,19 @@
+    {% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% if user.is_authenticated %}
+        {% include 'account/sub_nav.html' %}
+        {% endif %}
+        <div class="span12">
+            <h2>Quiz</h2>
+            
+            <h5><a href= "http://vlabs.iitb.ac.in/sbhs/exam" target="_blank"> Quiz Link </a>
+            </h5>
+            <br>           
+        </div>
+    </div>
+</div>
+{% endblock %}

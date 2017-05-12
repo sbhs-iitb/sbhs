@@ -1,0 +1,61 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include "account/sub_nav.html" %}
+        <script>
+        document.getElementById("video-nav").classList.add("active");
+        </script>
+        <div class="span12">
+            <h3>SBHS live feed: Machine ID {{ mid }}</h3>
+            <div class="span4 offset4" style="text-align: center">
+            </div>
+
+
+
+              {% if mid > 10 %}
+
+ <img id="videoImage" src="http://10.102.152.16:8080/webcams/{{ mid }}/get_image_data" alt="SBHS live feed" class="span4 offset4" style="padding-bottom: 20px;">
+
+
+
+               {% else %}
+
+       
+ <img id="videoImage" src="{% static image_link %}" alt="SBHS live feed" class="span4 offset4">
+{% endif %}
+            <div class="span4 offset4" style="text-align: center">
+            <a href="#" onclick="image_reloader()" id="image_reloader" class="btn btn-primary btn-large">Refresh image</a>
+            
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+{% if user.is_admin %}
+setInterval(function() {
+    var refresh = new Image();
+    refresh.src = "{% url 'sbhs_server.webcam.views.reload' mid %}";
+    document.getElementById("videoImage").src = "{% static image_link %}?" + new Date().getTime();
+}, 2000);
+{% else %}
+window.image_reloader = function() {
+    var button = document.getElementById("image_reloader");
+
+    
+    if (!button.disabled) {
+        button.setAttribute("disabled", true);
+        var refresh = new Image();
+        refresh.src = "{% url 'sbhs_server.webcam.views.reload' mid  %}";
+        document.getElementById("videoImage").src = "{% static image_link %}?" + new Date().getTime();
+        setTimeout(function(){
+            button.removeAttribute('disabled');
+        }, 3000);
+    }
+};
+
+(function(){image_reloader();})();
+{% endif %}
+</script>
+{% endblock %}

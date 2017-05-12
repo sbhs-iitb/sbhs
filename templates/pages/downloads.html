@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% if user.is_authenticated %}
+        {% include 'account/sub_nav.html' %}
+        {% endif %}
+        <div class="span8">
+            <h1>Downloads</h1>
+            <br><br>
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <td>Scilab 5.3.3 for Windows</td>
+                        <td><a href="{% static 'scilab/scilab-5.3.3-windows.exe' %}" target="_blank">Download</a></td>
+                    </tr>
+                    <tr>
+                        <td>Scilab 5.3.3 for Linux</td>
+                        <td><a href="{% static 'scilab/scilab-5.3.3-linux.tar.gz' %}" target="_blank">Download</a></td>
+                    </tr>
+                    <tr>
+                        <td>SBHS Scilab codes for Windows</td>
+                        <td><a href="{% static 'sbhsclient/scilab_codes_windows.zip' %}" target="_blank">Download</a></td>
+                    </tr>
+                    <tr>
+                        <td>SBHS Scilab codes for Linux (32 bit)</td>
+                        <td><a href="{% static 'sbhsclient/scilab_codes_linux_32.zip' %}" target="_blank">Download</a></td>
+                    </tr>
+                    <tr>
+                        <td>SBHS Scilab codes for Linux (64 bit)</td>
+                        <td><a href="{% static 'sbhsclient/scilab_codes_linux_64.zip' %}" target="_blank">Download</a></td>
+                    </tr>
+                    <tr>
+                        <td>SBHS Scilab codes for Local experiments</td>
+                        <td><a href="{% static 'sbhsclient/scilab_codes_local.zip' %}" target="_blank">Download</a></td>
+                    </tr>
+                    <tr>
+                        <td>SBHS Scilab codes for Data Analysis</td>
+                        <td><a href="{% static 'sbhsclient/scilab_codes_analysis.zip' %}" target="_blank">Download</a></td>
+                    </tr>
+                    <tr><td></td><td></td></tr>
+                </tbody>
+            </table>
+            <br><br>
+            <div class="alert alert-info">
+                For older versions of linux (For example, Ubuntu <= 11.10), a new version of package <b>libc6</b> (>= 2.15) is required. The package is available from Ubuntu archives on <a href="http://archive.ubuntu.com/ubuntu/pool/main/e/eglibc/libc6_2.17-0ubuntu5_i386.deb" target="_blank" style="color: yellow">this link</a>.
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

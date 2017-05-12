@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include "account/sub_nav.html" %}
+        <script>
+        document.getElementById("view-slot-nav").classList.add("active");
+        </script>
+        <div class="span12">
+        <h3>Your booked slots</h3>
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Slot timings</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in bookings %}
+                <tr>
+                    <td>{{ b.booking_date|date:"M d, Y" }}</td>
+                    <td>{{ b.slot }}</td>
+                    {% if now_time < b.start_time %}
+                    <td><a class="btn btn-danger" href="{% url 'sbhs_server.slot.views.delete' b.id %}" onclick="return confirm('Are you sure you want to delete booking for slot {{b.slot}} ?');">Delete</a></td>
+                    {% else %}
+                    <td><a class="btn btn-disabled" disabled="disabled">Delete</a></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

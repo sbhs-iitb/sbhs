@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% if user.is_authenticated %}
+        {% include 'account/sub_nav.html' %}
+        {% endif %}
+        <div class="span12">
+            <div class="page-header">
+                <div class="span1" style="margin-left: 0; margin-right: 20px;">
+                    <img src="{% static 'img/iitbLogo.png' %}" alt="IITB">
+                </div>
+                <h1>About us</h1>
+                <p>SBHS Virtual Labs Team</p>
+            </div>
+        </div>
+        <div class="span2">
+            <img src="{% static 'img/kannan.jpg' %}" alt="Prof. Kannan Moudgalya">
+            <b>Principal Investigator</b><br>
+            Prof. Kannan Moudgalya
+        </div>
+        <div class="span10">
+            <p style="text-align:justify">
+                Prof. Kannan M. Moudgalya received a B.Tech degree in chemical engineering from IIT Madras, a Master of Electrical Engineering from Rice University and a Ph.D (Chemical Engineering) degree, also from Rice Uni versity. He has been a professor at IIT Bombay for 22 years. He spent one year at the University of Alberta as a visiting professor.
+                <br><br>
+                Prof. Moudgalya works in the areas of control, simulation, mathematical modelling and education technologies. He has a large number of publications in international journals and conferences. He has written two books:
+                <ol>
+                    <li><a href="http://books.google.co.in/books/about/Optimization.html?id=Byqreay8y_MC" target="_blank">Optimization: theory and practice, with Prof. M. C. Joshi, published by Narosa</a></li>
+                    <li><a href="http://as.wiley.com/WileyCDA/WileyTitle/productCd-0470031441.html" target="_blank">Digital Control, published by John Wiley &amp; Sons</a></li>
+                </ol>
+                <br>
+                Prof.Moudgalya held the posts of Associate Dean (R&amp;D), Head of Office Automation and Head of Distance Education, at IIT Bombay. He is currently a Member of the Standing Committee of the National Mission on Education through ICT. He contributes to this Mission through projects in the areas of spoken tutorials (<a href="http://www.spoken-tutorial.org/" target="_blank">www.spoken-tutorial.org</a>), open source software (<a href="http://www.scilab.in/" target="_blank">www.scilab.in</a>) and talk to a teacher (<a href="http://www.co-learn.in/" target="_blank">www.co-learn.in</a>). 
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span10 offset2">
+            <br>
+            <h3>SBHS Team</h3>
+            <ul>
+                <li>Inderpreet Arora</li>
+                <li>Rupak Rokade</li>
+                <li>Kaushik Venkata Belusonti</li>
+                <li>Prashant Shah</li>
+                <li>Victor Chakroborty</li>
+                <li>Shalini Shrivastava</li>
+                <li>Rakhi R</li>
+                <li>Sushant Poojary</li>
+                <li>Tanuj Bhojwani</li>
+                <li>Sitesh Patel</li>
+                <li>Ankit Bahuguna</li>
+                <li>Amol Mandhane</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
