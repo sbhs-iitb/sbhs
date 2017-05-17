@@ -49,19 +49,19 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'south',
+    #'south',
     'undelete',
     #'yaksh',
     'taggit',
 
-    'sbhs_server.account',
-    'sbhs_server.admin',
-    'sbhs_server.experiment',
-    'sbhs_server.pages',
-    'sbhs_server.password',
-    'sbhs_server.slot',
+    'account',
+    'myadmin',
+    'experiment',
+    'pages',
+    'password',
+    'slot',
     'sbhs_server.tables',
-    'sbhs_server.webcam',
+    'webcam',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -149,10 +149,27 @@ if is_production:
 else:
     STATIC_URL = '/static/'
 
-TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR, 'templates/'),
-)
+# TEMPLATE_DIRS = (
+#     os.path.join(BASE_DIR, 'pages/templates/'),
+# )
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
 import warnings
 warnings.filterwarnings(

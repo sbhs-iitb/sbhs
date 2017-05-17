@@ -7,7 +7,7 @@
         {% include "account/sub_nav.html" %}
         <div class="span12">
         {% include "admin/sub_nav.html" %}
-        <h4>MID allotment mode is {{ allotment_mode }}. <small>Change to <a href="{% url 'sbhs_server.admin.views.toggle_allotment_mode' %}">{% if allotment_mode == 'Random' %}Workshop mode{% else %}Random mode{% endif %}</a></small></h4>
+        <h4>MID allotment mode is {{ allotment_mode }}. <small>Change to <a href="{% url 'admin_toggle_allotment_mode' %}">{% if allotment_mode == 'Random' %}Workshop mode{% else %}Random mode{% endif %}</a></small></h4>
         <h1>Board status</h1>
             <table class="table table-bordered">
                 <thead>
@@ -22,8 +22,8 @@
                     <tr>
                         <td>{{ b.mid }}</td>
                         <td><span class="label label-{% if b.online %}success{% else %}important{% endif %}">{% if b.online %}Online{% else %}Offline{% endif %}</span></td>
-                        <td><a href="{% url 'sbhs_server.webcam.views.show_video_to_admin' b.mid %}" target="_blank">View image</a></td>
-                        <td><a href="{% url 'sbhs_server.admin.views.profile' b.mid %}">View temperature profile</a></td>
+                        <td><a href="{% url 'webcam_show_video_to_admin' b.mid %}" target="_blank">View image</a></td>
+                        <td><a href="{% url 'admin_profile' b.mid %}">View temperature profile</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>

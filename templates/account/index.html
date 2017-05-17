@@ -6,7 +6,7 @@
         <div class="span5">
             <h2>Login</h2>
             <br>
-            <form action="{% url 'sbhs_server.account.views.login' %}" method="POST">
+            <form action="{% url 'account_login' %}" method="POST">
                 {% csrf_token %}
                 <label for="login_username">Username</label>
                 <input type="text" name="username" id="login_username" required>
@@ -15,12 +15,12 @@
                 <input type="password" name="password" id="login_password" required>
                 <br>
                 <input type="submit" class="btn btn-primary" value="Login">
-                &nbsp;&nbsp;<a href="{% url 'sbhs_server.password.views.new' %}">Forgot Password?</a>
+                &nbsp;&nbsp;<a href="{% url 'password_index' %}">Forgot Password?</a>
             </form>
         </div>
         <div class="span5 pull-right">
             <h2>Create Account</h2>
-            <form action="{% url 'sbhs_server.account.views.create' %}" method="POST">
+            <form action="{% url 'account_create' %}" method="POST">
                 {% csrf_token %}
                 <label for="name">Name</label>
                 <input type="text" name="name" id="name" required>

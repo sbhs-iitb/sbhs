@@ -1,9 +1,9 @@
 <div class="span12">
     <ul class="nav nav-pills">
-        <li id="home-nav"><a href="{% url 'sbhs_server.account.views.home' %}">Home</a></li>
-        <li id="book-slot-nav"><a href="{% url 'sbhs_server.slot.views.new' %}">Book slot</a></li>
-        <li id="view-slot-nav"><a href="{% url 'sbhs_server.slot.views.index' %}">View/Delete slot</a></li>
-        <li id="download-log-nav"><a href="{% url 'sbhs_server.experiment.views.logs' %}">Download log files</a></li>
-        <li id="video-nav"><a href="{% url 'sbhs_server.webcam.views.show_video' %}">Show video</a></li>
+        <li id="home-nav"><a href="{% url 'account_home' %}">Home</a></li>
+        <li id="book-slot-nav"><a href="{% url 'slot_new' %}">Book slot</a></li>
+        <li id="view-slot-nav"><a href="{% url 'slot_index' %}">View/Delete slot</a></li>
+        <li id="download-log-nav"><a href="{% url 'experiment_logs' %}">Download log files</a></li>
+        <li id="video-nav"><a href="{% url 'webcam_show_video' %}">Show video</a></li>
         </ul>
 </div>

@@ -17,7 +17,7 @@
             <h3>Book slot</h3>
             {% if cur_slots|length > 0 %}
             <h4>Current slot {{ cur_slots.0 }} is vacant</h4>
-            <form action="{% url 'sbhs_server.slot.views.create' %}" method="POST">
+            <form action="{% url 'slot_create' %}" method="POST">
                 {% csrf_token %}
                 <input type="hidden" name="slot" value="{{ cur_slots.0.id }}">
                 <input type="hidden" name="date" value="CURRENT">
@@ -26,7 +26,7 @@
             {% endif %}
             <br><br>
             <h4>Book future slots</h4>
-            <form action="{% url 'sbhs_server.slot.views.create' %}" method="POST">
+            <form action="{% url 'slot_create' %}" method="POST">
                 {% csrf_token %}
                 <label for="date">Booking date</label> <br>
                 <div class="input-append date" id="dp1" data-date="{{ nowdate }}" data-date-format="yyyy-mm-dd">
@@ -61,7 +61,7 @@
         var newDate = new Date(ev.date);
         var string = newDate.getFullYear() + "-" + (newDate.getMonth() + 1) + "-" + newDate.getDate();
         $.ajax({
-            url: "{% url 'sbhs_server.slot.views.show' '' %}" + string,
+            url: "{% url 'slot_show' '' %}" + string,
             success: function(msg) {
                 $("#slotTimingWrap").html(msg);
             }

@@ -5,7 +5,7 @@ import random, datetime, os
 from sbhs_server.helpers import mailer, simple_encrypt
 from django.contrib.auth.models import UserManager
 from sbhs_server import settings
-from yaksh.models import Profile
+#from yaksh.models import Profile
 # Create your models here.
 
 class Board(TrashableMixin):

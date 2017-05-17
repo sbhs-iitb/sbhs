@@ -36,7 +36,7 @@
 {% if user.is_admin %}
 setInterval(function() {
     var refresh = new Image();
-    refresh.src = "{% url 'sbhs_server.webcam.views.reload' mid %}";
+    refresh.src = "{% url 'webcam_reload_image' mid %}";
     document.getElementById("videoImage").src = "{% static image_link %}?" + new Date().getTime();
 }, 2000);
 {% else %}
@@ -47,7 +47,7 @@ window.image_reloader = function() {
     if (!button.disabled) {
         button.setAttribute("disabled", true);
         var refresh = new Image();
-        refresh.src = "{% url 'sbhs_server.webcam.views.reload' mid  %}";
+        refresh.src = "{% url 'webcam_reload_image' mid  %}";
         document.getElementById("videoImage").src = "{% static image_link %}?" + new Date().getTime();
         setTimeout(function(){
             button.removeAttribute('disabled');

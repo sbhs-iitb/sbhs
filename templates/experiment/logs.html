@@ -24,7 +24,7 @@
                     <td>{{ e.booking.start_time|date:"M d, Y" }}</td>
                     <td>{{ e.booking.slot }}</td>
                     <td>{{ e.logname }}</td>
-                    <td><a href="{% url 'sbhs_server.experiment.views.download_log' e.id e.logname %}" target="_blank">Download</a></td>
+                    <td><a href="{% url 'experiment_logs' e.id e.logname %}" target="_blank">Download</a></td>
                 </tr>
                 {% endfor %}
             </tbody>

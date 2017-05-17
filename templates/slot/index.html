@@ -17,13 +17,13 @@
                     <th>Delete</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody>url
                 {% for b in bookings %}
                 <tr>
                     <td>{{ b.booking_date|date:"M d, Y" }}</td>
                     <td>{{ b.slot }}</td>
                     {% if now_time < b.start_time %}
-                    <td><a class="btn btn-danger" href="{% url 'sbhs_server.slot.views.delete' b.id %}" onclick="return confirm('Are you sure you want to delete booking for slot {{b.slot}} ?');">Delete</a></td>
+                    <td><a class="btn btn-danger" href="{% url 'slot_delete' b.id %}" onclick="return confirm('Are you sure you want to delete booking for slot {{b.slot}} ?');">Delete</a></td>
                     {% else %}
                     <td><a class="btn btn-disabled" disabled="disabled">Delete</a></td>
                     {% endif %}

@@ -6,7 +6,7 @@
         <div class="span11">
             <h2>Change Password</h2>
             <br>
-            <form action="{% url 'sbhs_server.password.views.email' %}" method="POST">
+            <form action="{% url 'password_link' %}" method="POST">
                 {% csrf_token %}
                 <label for="email">Email</label>
                 <input type="email" name="email" id="email" required>
