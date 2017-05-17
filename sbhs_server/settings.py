@@ -49,9 +49,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    #'south',
+    'south',
     'undelete',
-    'yaksh',
+    #'yaksh',
     'taggit',
 
     'sbhs_server.account',
