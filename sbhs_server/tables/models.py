@@ -35,12 +35,12 @@ class Board(TrashableMixin):
             board_num = random.randrange(online_boards_count)
             return settings.online_mids[board_num]
         else:
-            last_MID = Account.objects.select_related().order_by("-id")[0].board.mid;
+            last_allocated_MID = Account.objects.select_related().order_by("-id")[0].board.mid;
             online_boards = sorted(settings.online_mids)
             for o in online_boards:
-                if o > last_MID:
-                    return o
-            return online_boards[0]
+                if o > last_allocated_MID:
+                    return Board.objects.get(mid=o).id
+            return Board.objects.get(mid=online_boards[0]).id
 
     def image_link(self):
         return settings.WEBCAM_STATIC_DIR + "image" + str(self.mid) + ".jpeg"

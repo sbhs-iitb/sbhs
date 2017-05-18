@@ -8,9 +8,6 @@ LIMIT = 2
 
 @login_required(redirect_field_name=None)
 def new(req):
-    print ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
-    print req.user
-    print ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;"
     cur_slots = Slot.current_slots(req.user.board.mid)
     all_slots = Slot.get_free_slots(req.user.board.mid)
     date = (datetime.datetime.now()).strftime("%Y-%m-%d")
