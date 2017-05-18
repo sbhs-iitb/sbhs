@@ -250,6 +250,9 @@ with open(os.path.join(BASE_DIR, 'map_machine_ids.txt')) as f:
             pass
 
 online_mids = [int(i) for i in boards.keys()]
+
+print "No of machines online : ", len(online_mids)
+
 import sys
 print >>sys.stderr, online_mids[1:33] #srikant
 #srikant

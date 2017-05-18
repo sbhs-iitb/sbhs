@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from sbhs_server.tables.models import Account, Board
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.core.validators import validate_email
 from django.contrib import messages
 from sbhs_server.helpers import simple_encrypt
@@ -92,8 +92,17 @@ def confirm(req, token):
 def login(req):
     username = req.POST.get('username')
     password = req.POST.get('password')
-    user = authenticate(username=username, password=password)
-    if user is not None:
+    #user = authenticate(username=username, password=password)
+
+    try:
+        user = Account.objects.get(username=username)
+    except ObjectDoesNotExist:
+        messages.add_message(req, messages.ERROR, "Invalid username or password.")
+        return redirect(index)
+        
+    is_authenticated = user.check_password(password)
+
+    if is_authenticated:
         if user.is_active:
             LOGIN(req, user)
             return redirect(index)
