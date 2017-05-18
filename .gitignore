@@ -1,3 +1,4 @@
 *.pyc
 sbhs_server/*/*.pyc
 sbhs_server/credentials.py
+log/

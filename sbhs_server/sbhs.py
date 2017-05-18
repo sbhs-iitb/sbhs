@@ -1,10 +1,11 @@
 import serial
 import os
 from time import localtime, strftime, sleep
+import sbhs_server.credentials as credentials
 
-MAP_FILE = '/home/vlabs/sbhs_vlabs/sbhs/map_machine_ids.txt'
+MAP_FILE = credentials.MAP_FILE
 #LOG_FILE = '../log/sbhserr.log'
-LOG_FILE = '/tmp/sbhserr.log'
+LOG_FILE = credentials.LOG_FILE
 
 OUTGOING_MACHINE_ID  = 252
 INCOMING_FAN  = 253
@@ -42,11 +43,11 @@ class Sbhs:
             usb_device_file = False
             for mapping_str in map_file.readlines():
                 mapping = mapping_str.split('=')
-		self.log('mapping: ' + mapping[1], 'ERROR') #srikant
+                self.log('mapping: ' + mapping[1], 'ERROR') #srikant
                 # if mapping for the machine id found set the usb device file and break out of loop
                 if mapping[0] == str(self.machine_id):
                     usb_device_file = mapping[1].strip()
-		    #self.log('usb_device_file: ' + usb_device_file, 'ERROR') #srikant
+            #self.log('usb_device_file: ' + usb_device_file, 'ERROR') #srikant
                     break
             # reached end of file and check if machine id entry is present in the machine map file
             map_file.close()

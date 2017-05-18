@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 import sys #srikant
 import socket
+import sbhs_server.credentials as credentials
 hostname = socket.gethostname()
 is_production = hostname == "vlabs-Veriton-Series"
 
@@ -21,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'k8^&^wr-skvt1bw$7^9mp$ic^5iubco@=bz*@hljl+vz9-&&_p$$$deep'
+SECRET_KEY = credentials.PROJECT_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = not is_production
@@ -122,8 +123,8 @@ SESSION_COOKIE_NAME = "frffvbaVq"
 
 EMAIL_HOST = 'smtp-auth.iitb.ac.in'
 EMAIL_PORT = 25
-EMAIL_HOST_USER = "username"
-EMAIL_HOST_PASSWORD = "password"
+EMAIL_HOST_USER = credentials.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = credentials.EMAIL_HOST_PASSWORD
 
 
 # Static files (CSS, JavaScript, Images)
@@ -249,7 +250,6 @@ with open(os.path.join(BASE_DIR, 'map_machine_ids.txt')) as f:
             pass
 
 online_mids = [int(i) for i in boards.keys()]
-
 import sys
 print >>sys.stderr, online_mids[1:33] #srikant
 #srikant
