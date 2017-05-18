@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login as LOGIN
 from django.contrib.auth import logout as LOGOUT
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
 # Create your views here.
 
 def index(req):
@@ -63,7 +64,8 @@ def create(req):
                 name=name,
                 username=username,
                 email=email,
-                board_id=Board.allot_board()
+                board_id=Board.allot_board(),
+                last_login=datetime.now().strftime("%Y-%m-%d %H:%M")
             )
     account.set_password(password)
     account.save()
