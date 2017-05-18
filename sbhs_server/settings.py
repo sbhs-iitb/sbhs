@@ -121,8 +121,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CSRF_COOKIE_NAME = "pfesgbxra"
 SESSION_COOKIE_NAME = "frffvbaVq"
 
-EMAIL_HOST = 'smtp-auth.iitb.ac.in'
-EMAIL_PORT = 25
+EMAIL_HOST = 'smtp.gmail.com' #'smtp-auth.iitb.ac.in'
+EMAIL_PORT = 587 #25
 EMAIL_HOST_USER = credentials.EMAIL_HOST_USER
 EMAIL_HOST_PASSWORD = credentials.EMAIL_HOST_PASSWORD
 
