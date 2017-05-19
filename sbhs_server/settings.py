@@ -29,7 +29,10 @@ DEBUG = not is_production
 
 TEMPLATE_DEBUG = not is_production
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+]
 
 if not DEBUG:
     ALLOWED_HOSTS = [

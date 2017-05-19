@@ -153,9 +153,11 @@ def reset(req):
                 experiment = experiment[0]
                 now = datetime.datetime.now()
                 endtime = experiment.booking.end_time()
+
                 boards[key]["board"].setHeat(0)
                 boards[key]["board"].setFan(100)
-                log_data(boards[key]["board"], key)
+
+                log_data(boards[key]["board"], key, 0, 100)
                 if endtime < now:
                     boards[key]["experiment_id"] = None
     except:

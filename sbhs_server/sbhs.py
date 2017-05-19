@@ -113,6 +113,7 @@ class Sbhs:
 
         try:
             self._write(chr(INCOMING_HEAT))
+            sleep(0.5)
             self._write(chr(val))
             return True
         except:
@@ -127,6 +128,7 @@ class Sbhs:
             return False
         try:
             self._write(chr(INCOMING_FAN))
+            sleep(0.5)
             self._write(chr(val))
             return True
         except:
