@@ -5,6 +5,7 @@ import random, datetime, os
 from sbhs_server.helpers import mailer, simple_encrypt
 from django.contrib.auth.models import UserManager
 from sbhs_server import settings
+from django.core.exceptions import ObjectDoesNotExist
 #from yaksh.models import Profile
 # Create your models here.
 
@@ -35,12 +36,22 @@ class Board(TrashableMixin):
             board_num = random.randrange(online_boards_count)
             return settings.online_mids[board_num]
         else:
-            last_allocated_MID = Account.objects.select_related().order_by("-id")[0].board.mid;
             online_boards = sorted(settings.online_mids)
-            for o in online_boards:
-                if o > last_allocated_MID:
-                    return Board.objects.get(mid=o).id
-            return Board.objects.get(mid=online_boards[0]).id
+
+            # When the account table is empty, allocate first board 
+            try:
+                last_allocated_MID = Account.objects.select_related().order_by("-id")[0].board.mid;
+                for o in online_boards:
+                    if o > last_allocated_MID:
+                        return Board.objects.get(mid=o).id
+            except ObjectDoesNotExist:
+                pass
+            
+            # check if there is at least one online board
+            try:
+                return Board.objects.get(mid=online_boards[0]).id    
+            except Exception as e:
+                return -1    
 
     def image_link(self):
         return settings.WEBCAM_STATIC_DIR + "image" + str(self.mid) + ".jpeg"

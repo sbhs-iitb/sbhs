@@ -60,11 +60,18 @@ def create(req):
         return redirect(index)
 
     # try:
+
+    # check if a board could be allocated
+    allocated_board_id = Board.allot_board()
+    if allocated_board_id == -1:
+        messages.add_message(req, messages.ERROR, "Sorry!! No boards online at this moment. Try again in some time.")
+        return redirect(index)
+        
     account = Account(
                 name=name,
                 username=username,
                 email=email,
-                board_id=Board.allot_board(),
+                board_id=allocated_board_id,
                 last_login=datetime.now().strftime("%Y-%m-%d %H:%M")
             )
     account.set_password(password)
