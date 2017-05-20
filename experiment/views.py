@@ -104,7 +104,7 @@ def experiment(req):
                 boards[key]["board"].setHeat(heat)
                 boards[key]["board"].setFan(fan)
                 temperature = boards[key]["board"].getTemp()
-                log_data(boards[key]["board"], key, heat=heat, fan=fan, temp=temperature)
+                log_data(boards[key]["board"], key, experiment.id, heat=heat, fan=fan, temp=temperature)
 
                 server_end_ts = int(time.time() * 1000)
 
@@ -123,9 +123,10 @@ def experiment(req):
                 f.write(" ".join(MESSAGE.split(",")[:2]) + "\n")
                 f.close()
             else:
-                boards[key]["board"].setHeat(0)
-                boards[key]["board"].setFan(100)
-                log_data(boards[key]["board"], key)
+                # boards[key]["board"].setHeat(0)
+                # boards[key]["board"].setFan(100)
+                # log_data(boards[key]["board"], key)
+                reset(req)
                 
                 STATUS = 0
                 MESSAGE = "Slot has ended. Please book the next slot to continue the experiment."
@@ -157,7 +158,7 @@ def reset(req):
                 boards[key]["board"].setHeat(0)
                 boards[key]["board"].setFan(100)
 
-                log_data(boards[key]["board"], key, 0, 100)
+                log_data(boards[key]["board"], key, experiment.id, 0, 100)
                 if endtime < now:
                     boards[key]["experiment_id"] = None
     except:
@@ -182,17 +183,16 @@ def logs(req):
 @login_required(redirect_field_name=None)
 def download_log(req, experiment_id, fn):
     try:
-        experiment = Experiment.objects.select_related("booking", "booking__account").get(id=experiment_id)
-        assert req.user.id == experiment.booking.account.id
-        f = open(experiment.log, "r")
+        experiment_data = Experiment.objects.select_related("booking", "booking__account").get(id=experiment_id)
+        assert req.user.id == experiment_data.booking.account.id
+        f = open(experiment_data.log, "r")
         data = f.read()
         f.close()
         return HttpResponse(data, content_type='text/text')
     except:
         return HttpResponse("Requested log file doesn't exist.")
 
-def log_data(sbhs, mid, heat=None, fan=None, temp=None):
-    f = open(settings.SBHS_GLOBAL_LOG_DIR + "/" + str(mid) + ".log", "a")
+def log_data(sbhs, mid, experiment_id, heat=None, fan=None, temp=None):
     if heat is None:
         heat = sbhs.getHeat()
     if fan is None:
@@ -201,8 +201,11 @@ def log_data(sbhs, mid, heat=None, fan=None, temp=None):
         temp = sbhs.getTemp()
 
     data = "%d %s %s %s\n" % (int(time.time()), str(heat), str(fan), str(temp))
-    f.write(data)
-    f.close()
+    experiment_logfile = Experiment.objects.get(id=experiment_id).log
+    global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + str(mid) + ".log"
+    with open(global_logfile, "a") as global_loghandler, open(experiment_logfile, "a") as experiment_loghandler:
+        global_loghandler.write(data)
+        experiment_loghandler.write(data) 
 
 def validate_log_file(req):
     import hashlib
