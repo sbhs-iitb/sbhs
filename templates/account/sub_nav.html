@@ -5,5 +5,8 @@
         <li id="view-slot-nav"><a href="{% url 'slot_index' %}">View/Delete slot</a></li>
         <li id="download-log-nav"><a href="{% url 'experiment_logs' %}">Download log files</a></li>
         <li id="video-nav"><a href="{% url 'webcam_show_video' %}">Show video</a></li>
+        {% if user.is_admin %}
+        <li id="admin-nav"><a href="{% url 'admin_index' %}">Admin Panel</a></li>
+        {% endif %}
         </ul>
 </div>
