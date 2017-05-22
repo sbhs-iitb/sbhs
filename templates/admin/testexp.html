@@ -27,9 +27,9 @@
                 </tbody>
             </table>
         </div>
-        <div class="span5">    
+        <div class="span5" style="position: fixed;right: 10%; border: 1px slategray solid; padding: 15px;">    
             <div>
-                <input type="text" id="temp"><br/>
+                <input type="text" id="temp" disabled="true"><br/>
                 <button class="btn btn-primary" onclick="getTemp()">Get Temperature</button>
             </div>
             <br><br>
@@ -80,9 +80,11 @@
         request.done(function(data){
             if (data.status_code == 200) {
                 document.getElementById("temp").value = data.message;
+                document.getElementById("fan_val").value = 100;
+                document.getElementById("heater_val").value = 0;
             }
             else {
-                alert("Some error occured. Please try again!!");
+                alert(data.message);
             }
         });
     }
@@ -100,6 +102,7 @@
         var isInputOK = !isNaN(fan_value) && fan_value >=0 && fan_value <= 250 && !isNaN(heater_value) && heater_value >=0 && heater_value;
         if (!isInputOK) {
             alert("Please enter a value between 0 and 250");
+            return;
         }
 
         var request = $.ajax({
@@ -117,11 +120,11 @@
                 document.getElementById("temp").value = data.message;
             }
             else {
-                alert("Some error occured. Please try again!!");
+                alert(data.message);
             }
         });
     }
-
+    var mydata;
     function getTemp() {
         var selected_machine = document.getElementsByClassName("highlight");
         if (selected_machine.length == 0) {
@@ -138,11 +141,12 @@
         });
 
         request.done(function(data){
+            mydata = data;
             if (data.status_code == 200) {
                 document.getElementById("temp").value = data.message;
             }
             else {
-                alert("Some error occured. Please try again!!");
+                alert(data.message);
             }
         });
     }

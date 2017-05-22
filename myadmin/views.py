@@ -95,14 +95,14 @@ def reset_device(req):
 
     if usb_path is None:
         retVal={"status_code":400,"message":"Invalid MID"}
-        return HttpResponse(json.dumps(retVal))
+        return HttpResponse(json.dumps(retVal),content_type='application/json')
 
     #trying to connect to device
 
     # check if SBHS device is connected
     if not os.path.exists(usb_path):
         retVal={"status_code":500,"message":"Device Not connected to defined USB Port"}
-        return HttpResponse(json.dumps(retVal))
+        return HttpResponse(json.dumps(retVal),content_type='application/json')
 
     try:
         board = sbhs.Sbhs()
@@ -111,13 +111,13 @@ def reset_device(req):
         board.status = 1
         if board.reset_board():
             retVal={"status_code":200,"message":board.getTemp()}
-            return HttpResponse(json.dumps(retVal))
+            return HttpResponse(json.dumps(retVal),content_type='application/json')
         else:
             retVal={"status_code":500,"message":"Could not set the parameters.Try again."}
-            return HttpResponse(json.dumps(retVal))
+            return HttpResponse(json.dumps(retVal),content_type='application/json')
     except serial.serialutil.SerialException:
         retVal={"status_code":500,"message":"Could not connect to the device.Try again."}
-        return HttpResponse(json.dumps(retVal))
+        return HttpResponse(json.dumps(retVal),content_type='application/json')
 
 
 @csrf_exempt
@@ -135,14 +135,14 @@ def set_device_params(req):
 
     if usb_path is None:
         retVal={"status_code":400,"message":"Invalid MID"}
-        return HttpResponse(json.dumps(retVal))
+        return HttpResponse(json.dumps(retVal),content_type='application/json')
 
     #trying to connect to device
 
     # check if SBHS device is connected
     if not os.path.exists(usb_path):
         retVal={"status_code":500,"message":"Device Not connected to defined USB Port"}
-        return HttpResponse(json.dumps(retVal))
+        return HttpResponse(json.dumps(retVal),content_type='application/json')
 
     try:
         board = sbhs.Sbhs()
@@ -151,13 +151,13 @@ def set_device_params(req):
         board.status = 1
         if board.setFan(fan) and board.setHeat(heat):
             retVal={"status_code":200,"message":board.getTemp()}
-            return HttpResponse(json.dumps(retVal))
+            return HttpResponse(json.dumps(retVal),content_type='application/json')
         else:
             retVal={"status_code":500,"message":"Could not set the parameters.Try again."}
-            return HttpResponse(json.dumps(retVal))
+            return HttpResponse(json.dumps(retVal),content_type='application/json')
     except serial.serialutil.SerialException:
         retVal={"status_code":500,"message":"Could not connect to the device.Try again."}
-        return HttpResponse(json.dumps(retVal))
+        return HttpResponse(json.dumps(retVal),content_type='application/json')
 
 @csrf_exempt
 def get_device_temp(req):
@@ -172,14 +172,14 @@ def get_device_temp(req):
 
     if usb_path is None:
         retVal={"status_code":400,"message":"Invalid MID"}
-        return HttpResponse(json.dumps(retVal))
+        return HttpResponse(json.dumps(retVal),content_type='application/json')
 
     #trying to connect to device
 
     # check if SBHS device is connected
     if not os.path.exists(usb_path):
         retVal={"status_code":500,"message":"Device Not connected to defined USB Port"}
-        return HttpResponse(json.dumps(retVal))
+        return HttpResponse(json.dumps(retVal),content_type='application/json')
 
     try:
         board = sbhs.Sbhs()
@@ -189,10 +189,10 @@ def get_device_temp(req):
         temp=board.getTemp()
         if temp!=0.0:
             retVal={"status_code":200,"message":temp}
-            return HttpResponse(json.dumps(retVal))
+            return HttpResponse(json.dumps(retVal),content_type='application/json')
         else:
             retVal={"status_code":500,"message":"Could not set the parameters.Try again."}
-            return HttpResponse(json.dumps(retVal))
+            return HttpResponse(json.dumps(retVal),content_type='application/json')
     except serial.serialutil.SerialException:
         retVal={"status_code":500,"message":"Could not connect to the device.Try again."}
-        return HttpResponse(json.dumps(retVal))
+        return HttpResponse(json.dumps(retVal),content_type='application/json')
