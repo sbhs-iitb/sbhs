@@ -73,3 +73,10 @@ def profile(req, mid):
         "fan": fancsv,
         "temp": tempcsv
     })
+
+@login_required(redirect_field_name=None)
+def testing(req):
+    checkadmin(req)
+    boards = Board.objects.order_by('online').all()
+    allotment_mode = "Random" if Board.can_do_random_allotment() else "Workshop"
+    return render(req, 'admin/testexp.html', {"boards": boards, "allotment_mode": allotment_mode})
