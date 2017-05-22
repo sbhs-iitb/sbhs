@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include "account/sub_nav.html" %}
+        <div class="span12">
+            {% include "admin/sub_nav.html" %}
+            <table id="tableId" class="table table-bordered table-condensed">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Slot</th>
+                        <th>Board</th>
+                        <th>User</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in bookings %}
+                    <tr>
+                        <td>{{ b.booking_date }}</td>
+                        <td>{{ b.slot }}</td>
+                        <td>{{ b.account.board.mid }}</td>
+                        <td>{{ b.account.name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+				
+        </div>
+    </div>
+</div>
+<script>
+function addRowHandlers() {
+    var table = document.getElementById("tableId");
+    var rows = table.getElementsByTagName("tr");
+    for (i = 0; i < rows.length; i++) {
+        var currentRow = table.rows[i];
+        var createClickHandler = 
+            function(row) 
+            {
+                return function() { 
+                                        var cell = row.getElementsByTagName("td")[2];
+                                        var id = cell.innerHTML;
+                                        alert("id:" + id);
+                                 };
+            };
+
+        currentRow.onclick = createClickHandler(currentRow);
+    }
+}
+</script>
+<div align="right">
+<input type="number" step="0.1" id="temp">
+
+<button onclick="getTemp()">Get Temperature</button>
+<script>
+function getTemp() {
+    document.getElementById("field2").value = ;
+}
+<br> <br>
+</script>
+</div>
+
+
+<form name="reset" action="" method="POST">
+<div align="right">
+<br><br>
+<input type="hidden" value=100>
+<input type="hidden" value=100>
+<input type="submit" value="Reset Parameters">
+<br><br>
+</div>
+</form>
+
+<form name="set" action="" method="POST">
+<div align="right">
+Heater Input:<input type="number" size="3" name="Heater_Input">
+Fan Input:<input type="number" size="3" name="Fan_Input">
+<input type="submit" value="Set Parameters">
+<br><br>
+</div>
+</form>
+
+{% endblock %}
