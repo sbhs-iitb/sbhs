@@ -29,26 +29,22 @@
         </div>
         <div class="span5">    
             <div>
-                <input type="text" id="temp" readonly="true"><br/>
+                <input type="text" id="temp"><br/>
                 <button class="btn btn-primary" onclick="getTemp()">Get Temperature</button>
             </div>
             <br><br>
 
-            <form name="set" action="" method="POST">
-                <div>
-                    Heater Input: <input type="number" size="3" min="0" max="250" name="Heater_Input"><br/>
-                    Fan Input:<input type="number" size="3" min="0" max="250" name="Fan_Input" style="margin-left: 20px"><br/>
-                    <input type="submit" class="btn btn-primary" value="Set Parameters">
-                    <br><br>
-                </div>
-            </form>
+            <div>
+                Heater Input: <input type="number" size="3" min="0" max="250" id="heater_val"><br/>
+                Fan Input:<input type="number" size="3" min="0" max="250" id="fan_val" style="margin-left: 20px"><br/>
+                <button class="btn btn-primary" onclick="setParams()">Set Parameters</button>
+                <br><br>
+            </div>
             <br><br>
 
-            <form name="reset" action="" method="POST">
-                <div>
-                    <input type="submit" class="btn btn-primary" value="Reset Parameters">
-                </div>
-            </form>
+            <div>
+                <button class="btn btn-primary" onclick="resetParams()">Reset Parameters</button>
+            </div>           
 
         </div>
 
@@ -60,31 +56,96 @@
     }
 </style>
 <script>
-    var selected_mid = -1;
-    function addRowHandlers() {
-        var table = document.getElementById("tableId");
-        var rows = table.getElementsByTagName("tr");
-        for (i = 0; i < rows.length; i++) {
-            var currentRow = table.rows[i];
-            var createClickHandler = 
-            function(row) 
-            {
-                return function() { 
-                    var cell = row.getElementsByTagName("td")[0];
-                    selected_mid = cell.innerHTML;
-                };
-            };
-            currentRow.onclick = createClickHandler(currentRow);
-        }
-    }
-    function getTemp() {
-        document.getElementById("field2").value = 0;
-    }
+    var BASE_URL = window.location.origin;
     $("#tableId").on("click", "tr", function(e) {
         $("#tableId").find("tr.highlight").removeClass("highlight");
         $(this).addClass("highlight");
     });
-    addRowHandlers();
+    
+    function resetParams() {
+        var selected_machine = document.getElementsByClassName("highlight");
+        if (selected_machine.length == 0) {
+            alert("Please select a machine first");
+            return;
+        }
+        var selected_mid = selected_machine[0].getElementsByTagName('td')[0].innerHTML;
+        var request = $.ajax({
+            url : BASE_URL + '/admin/resetdevice',
+            method : 'POST',
+            data : {
+                'mid' : selected_mid
+            }
+        });
+
+        request.done(function(data){
+            if (data.status_code == 200) {
+                document.getElementById("temp").value = data.message;
+            }
+            else {
+                alert("Some error occured. Please try again!!");
+            }
+        });
+    }
+
+    function setParams() {
+        var selected_machine = document.getElementsByClassName("highlight");
+        if (selected_machine.length == 0) {
+            alert("Please select a machine first");
+            return;
+        }
+        var selected_mid = selected_machine[0].getElementsByTagName('td')[0].innerHTML;
+        var fan_value = document.getElementById("fan_val").value;
+        var heater_value = document.getElementById("heater_val").value;
+
+        var isInputOK = !isNaN(fan_value) && fan_value >=0 && fan_value <= 250 && !isNaN(heater_value) && heater_value >=0 && heater_value;
+        if (!isInputOK) {
+            alert("Please enter a value between 0 and 250");
+        }
+
+        var request = $.ajax({
+            url : BASE_URL + '/admin/setdevice',
+            method : 'POST',
+            data : {
+                'mid' : selected_mid,
+                'fan' : fan_value,
+                'heat' : heater_value
+            }
+        });
+
+        request.done(function(data){
+            if (data.status_code == 200) {
+                document.getElementById("temp").value = data.message;
+            }
+            else {
+                alert("Some error occured. Please try again!!");
+            }
+        });
+    }
+
+    function getTemp() {
+        var selected_machine = document.getElementsByClassName("highlight");
+        if (selected_machine.length == 0) {
+            alert("Please select a machine first");
+            return;
+        }
+        var selected_mid = selected_machine[0].getElementsByTagName('td')[0].innerHTML;
+        var request = $.ajax({
+            url : BASE_URL + '/admin/gettemp',
+            method : 'POST',
+            data : {
+                'mid' : selected_mid
+            }
+        });
+
+        request.done(function(data){
+            if (data.status_code == 200) {
+                document.getElementById("temp").value = data.message;
+            }
+            else {
+                alert("Some error occured. Please try again!!");
+            }
+        });
+    }
 </script>
 
 {% endblock %}
