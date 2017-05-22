@@ -1,6 +1,6 @@
 32=/dev/ttyUSB2
 25=/dev/ttyUSB1
-27=/dev/ttyUSB0
+52=/dev/ttyUSB0
 15=/dev/ttyUSB30
 16=/dev/ttyUSB36
 14=/dev/ttyUSB31

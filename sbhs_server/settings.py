@@ -10,6 +10,9 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 import sys #srikant
 import socket
 import sbhs_server.credentials as credentials
+
+
+
 hostname = socket.gethostname()
 is_production = hostname == "vlabs-Veriton-Series"
 
@@ -32,6 +35,8 @@ TEMPLATE_DEBUG = not is_production
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
+    "192.168.43.208",
+    "192.168.43.144",
 ]
 
 if not DEBUG:
@@ -57,6 +62,7 @@ INSTALLED_APPS = (
     'undelete',
     #'yaksh',
     'taggit',
+    #'corsheaders'
 
     'account',
     'myadmin',
@@ -68,19 +74,21 @@ INSTALLED_APPS = (
     'webcam',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #'corsheaders.middleware.CorsMiddleware',
 )
 
 ROOT_URLCONF = 'sbhs_server.urls'
 
 WSGI_APPLICATION = 'sbhs_server.wsgi.application'
 
+#CORS_ORIGIN_ALLOW_ALL=True
 
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
@@ -238,10 +246,12 @@ SBHS_GLOBAL_LOG_DIR = os.path.join(BASE_DIR, 'log')
 
 from sbhs_server import sbhs
 boards = {}
+MID_PORT_MAP={}
 with open(os.path.join(BASE_DIR, 'map_machine_ids.txt')) as f:
     for line in f:
         try:
             data = line.split("=")
+            MID_PORT_MAP[int(data[0])]=data[1].strip()
             brd = sbhs.Sbhs()
             b = brd.connect(int(data[0]))
             assert b == True
