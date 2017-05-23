@@ -136,6 +136,7 @@ EMAIL_HOST = 'smtp.gmail.com' #'smtp-auth.iitb.ac.in'
 EMAIL_PORT = 587 #25
 EMAIL_HOST_USER = credentials.EMAIL_HOST_USER
 EMAIL_HOST_PASSWORD = credentials.EMAIL_HOST_PASSWORD
+ADMIN_EMAIL=credentials.ADMIN_EMAIL
 
 
 # Static files (CSS, JavaScript, Images)
@@ -251,13 +252,13 @@ with open(os.path.join(BASE_DIR, 'map_machine_ids.txt')) as f:
     for line in f:
         try:
             data = line.split("=")
-            MID_PORT_MAP[int(data[0])]=data[1].strip()
             brd = sbhs.Sbhs()
             b = brd.connect(int(data[0]))
             assert b == True
-            key = int(brd.getMachineId())          	   
+            key = int(brd.getMachineId())
             assert key > 0
             brd.reset_board()
+            MID_PORT_MAP[key]=data[1].strip()
             boards[str(key)] = {"board": brd, "experiment_id": None}
         except:
             pass
