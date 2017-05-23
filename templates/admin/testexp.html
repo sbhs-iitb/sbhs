@@ -90,6 +90,7 @@
     }
 
     function setParams() {
+        var MAX_VALUE = 100;
         var selected_machine = document.getElementsByClassName("highlight");
         if (selected_machine.length == 0) {
             alert("Please select a machine first");
@@ -99,9 +100,9 @@
         var fan_value = document.getElementById("fan_val").value;
         var heater_value = document.getElementById("heater_val").value;
 
-        var isInputOK = !isNaN(fan_value) && fan_value >=0 && fan_value <= 250 && !isNaN(heater_value) && heater_value >=0 && heater_value;
+        var isInputOK = !isNaN(fan_value) && fan_value >=0 && fan_value <= MAX_VALUE && !isNaN(heater_value) && heater_value >=0 && heater_value <= MAX_VALUE;
         if (!isInputOK) {
-            alert("Please enter a value between 0 and 250");
+            alert("Please enter a value between 0 and " + MAX_VALUE);
             return;
         }
 
