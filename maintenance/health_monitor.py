@@ -1,6 +1,6 @@
 import os, serial, smtplib
 from time import sleep
-from sbhs_server.settings import online_mids, ADMIN_EMAIL
+from sbhs_server.credentials import ADMIN_EMAIL
 from sbhs_server.helpers import mailer 
 
 MAX_PORTS = 256
@@ -68,7 +68,7 @@ def main():
         msg = "Nothing out of order was detected on the server. :)"
     #thread.start_new_thread(mailer.email, (ADMIN_EMAIL, "Health report of SBHS Server", msg))
     mailer.email(ADMIN_EMAIL, "Health report of SBHS Server", msg)
-    print msg
+    #print msg
 
 if __name__ == "__main__":
     main()

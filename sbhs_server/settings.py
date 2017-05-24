@@ -63,6 +63,7 @@ INSTALLED_APPS = (
     #'yaksh',
     'taggit',
     #'corsheaders'
+    'django_crontab',
 
     'account',
     'myadmin',
@@ -184,6 +185,10 @@ TEMPLATES = [
     },
 ]
 
+CRONJOBS = [
+    ('2 * * * *', 'maintenance.health_monitor.main', '>> /tmp/health_monitor.log'),
+]
+
 import warnings
 warnings.filterwarnings(
         'ignore', r"DateTimeField .* received a naive datetime",
@@ -270,6 +275,6 @@ print "No of machines online : ", len(online_mids)
 import sys
 print >>sys.stderr, online_mids[1:33] #srikant
 #srikant
-#f = open('/tmp/online_mids', 'w')
+#f = open(os.path.join(BASE_DIR, 'maintenance/online_mids.txt'), 'w')
 #f.write(online_mids)
 #f.close()
