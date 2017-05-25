@@ -2,6 +2,18 @@
 {% load staticfiles %}
 
 {% block content %}
+<style type="text/css">
+    .highlight {
+        background-color: lightblue;
+    }
+    #test-device, #monitor-logs {
+        position: fixed;
+        right: 10%;
+        border: 1px slategray solid;
+        padding: 15px;
+        display: none;
+    }
+</style>
 <div class="container">
     <div class="row">
         {% include "account/sub_nav.html" %}
@@ -15,6 +27,7 @@
                     <tr>
                         <th>Board MID</th>
                         <th>Status</th>
+                        <th>Occupied</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -22,12 +35,13 @@
                     <tr>
                         <td>{{ b.mid }}</td>
                         <td><span class="label label-{% if b.online %}success{% else %}important{% endif %}">{% if b.online %}Online{% else %}Offline{% endif %}</span></td>
+                        <td><span class="label label-{% if b.mid in mids %}important{% else %}success{% endif %}">{% if b.mid in mids %}Ongoing{% else %}Vacant{% endif %}</span></td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-        <div class="span5" style="position: fixed;right: 10%; border: 1px slategray solid; padding: 15px;">    
+        <div id="test-device" class="span5">    
             <div>
                 <input type="text" id="temp" disabled="true"><br/>
                 <button class="btn btn-primary" onclick="getTemp()">Get Temperature</button>
@@ -48,18 +62,29 @@
 
         </div>
 
+        <div class="span5" id="monitor-logs">
+            <span>chal raha hain bhai</span>
+        </div>
+
     </div>
 </div>
-<style type="text/css">
-    .highlight {
-        background-color: lightblue;
-    }
-</style>
 <script>
     var BASE_URL = window.location.origin;
     $("#tableId").on("click", "tr", function(e) {
         $("#tableId").find("tr.highlight").removeClass("highlight");
         $(this).addClass("highlight");
+        
+        columns = e.currentTarget.getElementsByTagName("td");
+        isSelectedMachineVacant = columns[columns.length-1].childNodes[0].className.indexOf("label-success") > -1
+        
+        if (isSelectedMachineVacant) {
+            $("#test-device").show();
+            $("#monitor-logs").hide();
+        }
+        else {
+            $("#monitor-logs").show();
+            $("#test-device").hide();
+        }
     });
     
     function resetParams() {

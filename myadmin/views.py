@@ -2,9 +2,9 @@ from django.shortcuts import render, redirect
 from django.http import Http404,HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from sbhs_server.tables.models import Board, Booking
+from sbhs_server.tables.models import Board, Booking, Slot
 from sbhs_server import settings,sbhs
-import subprocess,json,serial,os 
+import subprocess,json,serial,os, datetime
 # Create your views here.
 
 def checkadmin(req):
@@ -27,7 +27,7 @@ def toggle_allotment_mode(req):
 @login_required(redirect_field_name=None)
 def booking_index(req):
     checkadmin(req)
-    bookings = Booking.objects.order_by('-booking_date').select_related()[:50]
+    bookings = Booking.objects.order_by('-booking_date','-slot_id').filter(trashed_at__isnull=True).select_related()[:50]
     return render(req, 'admin/booking_index.html', {"bookings": bookings})
 
 @login_required(redirect_field_name=None)
@@ -78,9 +78,20 @@ def profile(req, mid):
 @login_required(redirect_field_name=None)
 def testing(req):
     checkadmin(req)
-    boards = Board.objects.order_by('online').all()
+    now = datetime.datetime.now()
+    current_slot_id = Slot.objects.filter(start_hour=now.hour,
+                                            start_minute__lt=now.minute,
+                                            end_minute__gt=now.minute)
+
+    current_slot_id = -1 if not current_slot_id else current_slot_id[0].id
+
+    current_bookings = Booking.objects.filter(slot_id=current_slot_id,
+                                                booking_date=datetime.date.today()).select_related()
+    current_mids = list([-1]) if not current_bookings else [current_booking.account.board.mid for current_booking in current_bookings]
+
+    boards = Board.objects.filter(online=1)
     allotment_mode = "Random" if Board.can_do_random_allotment() else "Workshop"
-    return render(req, 'admin/testexp.html', {"boards": boards, "allotment_mode": allotment_mode})
+    return render(req, 'admin/testexp.html', {"boards": boards, "allotment_mode": allotment_mode, "mids": current_mids})
 
 @csrf_exempt
 def reset_device(req):

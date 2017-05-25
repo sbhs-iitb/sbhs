@@ -54,7 +54,7 @@ def create(req):
 
 @login_required(redirect_field_name=None)
 def index(req):
-    bookings = req.user.booking_set.select_related("slot").order_by("booking_date")
+    bookings = req.user.booking_set.select_related("slot").filter(trashed_at__isnull=True).order_by("booking_date")
 
     return render(req, "slot/index.html", {"bookings": reversed(bookings),
                                             "now_time": datetime.datetime.now()})
