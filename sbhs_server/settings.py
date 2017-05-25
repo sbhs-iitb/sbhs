@@ -72,6 +72,7 @@ INSTALLED_APPS = (
     'slot',
     'sbhs_server.tables',
     'webcam',
+    'maintenance',
 )
 
 MIDDLEWARE = (
@@ -236,8 +237,10 @@ WEBCAM_STATIC_DIR = 'img/webcam/'
 
 if not is_production:
     SBHS_ADMINS = (
-        ("Amol Mandhane", "+91-9999999999", "amol_mandhane@iitb.ac.in"),
-        ("Amol Mandhane", "+91-9999999999", "amol_mandhane@iitb.ac.in"),
+        # ("Amol Mandhane", "+91-9999999999", "amol_mandhane@iitb.ac.in"),
+        # ("Amol Mandhane", "+91-9999999999", "amol_mandhane@iitb.ac.in"),
+        ('Debakanta Kar' , '0123456789' , 'kar.bubu.15@gmail.com'),
+        ('Deep Bhattacharyya' , '9876543210' , 'cr7.rick@gmail.com')
     )
 else:
     from sbhs_server.sbhs_admin_config import SBHS_ADMINS

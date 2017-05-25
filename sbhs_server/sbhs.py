@@ -1,7 +1,7 @@
 import serial
 import os
 from time import localtime, strftime, sleep
-import sbhs_server.credentials as credentials
+import credentials
 
 MAP_FILE = credentials.MAP_FILE
 #LOG_FILE = '../log/sbhserr.log'
