@@ -63,7 +63,9 @@
         </div>
 
         <div class="span5" id="monitor-logs">
-            <span>chal raha hain bhai</span>
+            <strong><p id="username"></p></strong>
+            <p id="log-data" style="word-spacing: 4em"></p>
+            <button class="btn btn-primary" onclick="getLogs()">Refresh Logs</button>
         </div>
 
     </div>
@@ -150,7 +152,7 @@
             }
         });
     }
-    var mydata;
+   
     function getTemp() {
         var selected_machine = document.getElementsByClassName("highlight");
         if (selected_machine.length == 0) {
@@ -167,7 +169,6 @@
         });
 
         request.done(function(data){
-            mydata = data;
             if (data.status_code == 200) {
                 document.getElementById("temp").value = data.message;
             }
@@ -176,6 +177,42 @@
             }
         });
     }
+
+    function getLogs() {
+        var selected_machine = document.getElementsByClassName("highlight");
+        if (selected_machine.length == 0) {
+            alert("Please select a machine first");
+            return;
+        }
+        var selected_mid = selected_machine[0].getElementsByTagName('td')[0].innerHTML;
+        var request = $.ajax({
+            url : BASE_URL + '/admin/monitor',
+            method : 'POST',
+            data : {
+                'mid' : selected_mid
+            }
+        });
+
+        header = "<th>Time</th><th>Fan</th><th>Heat</th><th>Temp</th>"
+        request.done(function(data){
+            if (data.status_code == 200) {
+                console.log(data.message.logs.replace("/\n/g", "<br/>"));
+                document.getElementById("username").innerHTML = "User : " + data.message.user;
+                document.getElementById("log-data").innerHTML = "<pre>Date Time Heater Fan Temp</pre>" + data.message.logs.replace(new RegExp("\n","g"), "<br/>");
+            }
+            else {
+                alert(data.status_code);
+            }
+        });
+    }
+
+    // update status of ongoing experiments
+    setInterval(function() {
+        var now = new Date();
+        if (now.getMinutes() == 56 || now.getMinutes() == 1) {
+            location.reload();
+        }
+    }, 60000);
 </script>
 
 {% endblock %}
