@@ -128,6 +128,19 @@ def monitor_experiment(req):
     data = {"user": current_user, "logs": logs}
     return HttpResponse(json.dumps({"status_code":200, "message":data}), content_type="application/json")
 
+@login_required(redirect_field_name=None)
+def download_log(req, mid):
+    checkadmin(req)
+    try:
+        global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + mid + ".log"
+        f = open(global_logfile, "r")
+        data = f.read()
+        f.close()
+        return HttpResponse(data, content_type='text/text')
+    except:
+        return HttpResponse("Requested log file doesn't exist.")
+
+
 @csrf_exempt
 def reset_device(req):
     """Resets the device to fan = 100 and heat = 0

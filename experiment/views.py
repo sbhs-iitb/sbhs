@@ -58,8 +58,12 @@ def initiation(req):
                         key = str(user_board.mid)
 			
                         settings.boards[key]["experiment_id"] = e.id
+                        global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + key + ".log"
+                        with open(global_logfile, "a") as global_loghandler:
+                            data = "\n\n===================New experiment====================\nUsername :", user.username, "\nExperiment Id :", e.id, "\n"
+                            global_loghandler.write(data)
+                            
                         reset(req)
-			
 
                         STATUS = 1
                         MESSAGE = filename
