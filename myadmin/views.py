@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import Http404,HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
-from sbhs_server.tables.models import Board, Booking, Slot
+from sbhs_server.tables.models import Board, Booking, Slot, Experiment
 from sbhs_server import settings,sbhs
 import subprocess,json,serial,os, datetime
 # Create your views here.
@@ -92,6 +92,54 @@ def testing(req):
     boards = Board.objects.filter(online=1)
     allotment_mode = "Random" if Board.can_do_random_allotment() else "Workshop"
     return render(req, 'admin/testexp.html', {"boards": boards, "allotment_mode": allotment_mode, "mids": current_mids})
+
+@csrf_exempt
+def monitor_experiment(req):
+    checkadmin(req)
+    try:
+        mid = int(req.POST.get("mid"))
+    except Exception as e:
+        return HttpResponse(json.dumps({"status_code":400, "message":"Invalid parameters"}), content_type="application/json")
+
+    now = datetime.datetime.now()
+    current_slot_id = Slot.objects.filter(start_hour=now.hour,
+                                            start_minute__lt=now.minute,
+                                            end_minute__gt=now.minute)
+
+    current_slot_id = -1 if not current_slot_id else current_slot_id[0].id
+
+    try:
+        current_booking = Booking.objects.get(slot_id=current_slot_id,
+                                                    booking_date=datetime.date.today(),
+                                                    account__board__mid=mid)
+    except Exception as e:
+        return HttpResponse(json.dumps({"status_code":400, "message":"Invalid MID"}), content_type="application/json")
+
+    current_booking_id, current_user = current_booking.id, current_booking.account.username
+
+    logfile = Experiment.objects.get(booking_id=current_booking_id).log
+
+    # get last 50 lines from logs
+    stdin,stdout = os.popen2("tail -n 10 "+logfile)
+    stdin.close()
+    logs = stdout.readlines(); stdout.close()
+    logs = "".join(logs)
+
+    data = {"user": current_user, "logs": logs}
+    return HttpResponse(json.dumps({"status_code":200, "message":data}), content_type="application/json")
+
+@login_required(redirect_field_name=None)
+def download_log(req, mid):
+    checkadmin(req)
+    try:
+        global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + mid + ".log"
+        f = open(global_logfile, "r")
+        data = f.read()
+        f.close()
+        return HttpResponse(data, content_type='text/text')
+    except:
+        return HttpResponse("Requested log file doesn't exist.")
+
 
 @csrf_exempt
 def reset_device(req):

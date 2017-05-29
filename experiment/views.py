@@ -58,8 +58,12 @@ def initiation(req):
                         key = str(user_board.mid)
 			
                         settings.boards[key]["experiment_id"] = e.id
+                        global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + key + ".log"
+                        with open(global_logfile, "a") as global_loghandler:
+                            data = "\n\n===================New experiment====================\nUsername :", user.username, "\nExperiment Id :", e.id, "\n"
+                            global_loghandler.write(data)
+                            
                         reset(req)
-			
 
                         STATUS = 1
                         MESSAGE = filename
@@ -200,7 +204,7 @@ def log_data(sbhs, mid, experiment_id, heat=None, fan=None, temp=None):
     if temp is None:
         temp = sbhs.getTemp()
 
-    data = "%d %s %s %s\n" % (int(time.time()), str(heat), str(fan), str(temp))
+    data = "%s %s %s %s\n" % (datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), str(heat), str(fan), str(temp))
     experiment_logfile = Experiment.objects.get(id=experiment_id).log
     global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + str(mid) + ".log"
     with open(global_logfile, "a") as global_loghandler, open(experiment_logfile, "a") as experiment_loghandler:

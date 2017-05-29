@@ -15,6 +15,8 @@
                         <th>Board MID</th>
                         <th>Status</th>
                         <th>Webcam</th>
+                        <th>Temperature Profile</th>
+                        <th>Download Logs</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -23,7 +25,8 @@
                         <td>{{ b.mid }}</td>
                         <td><span class="label label-{% if b.online %}success{% else %}important{% endif %}">{% if b.online %}Online{% else %}Offline{% endif %}</span></td>
                         <td><a href="{% url 'webcam_show_video_to_admin' b.mid %}" target="_blank">View image</a></td>
-                        <td><a href="{% url 'admin_profile' b.mid %}">View temperature profile</a></td>
+                        <td><a href="{% url 'admin_profile' b.mid %}">View</a></td>
+                        <td><a href="{% url 'admin_logs' b.mid %}">Download</a></td>
                     </tr>
                     {% endfor %}
                 </tbody>
