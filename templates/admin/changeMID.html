@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include "account/sub_nav.html" %}
+        <div class="span12">
+            {% include "admin/sub_nav.html" %}
+
+            Username: <input id="username" type="text">
+
+            <br><br>
+
+            <select id="mid">
+                {% for mid in mid_count %}
+                <option>
+                    {{ mid.board__mid }}-{{mid.mcount}}
+                </option>
+                {% endfor %}
+            </select>
+            <button class="btn btn-primary" onclick="updateMID()"> Update MID </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
