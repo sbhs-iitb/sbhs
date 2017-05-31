@@ -96,6 +96,9 @@
             return;
         }
         var selected_mid = selected_machine[0].getElementsByTagName('td')[0].innerHTML;
+        
+        $(".btn").prop('disabled',true);
+        
         var request = $.ajax({
             url : BASE_URL + '/admin/resetdevice',
             method : 'POST',
@@ -113,10 +116,12 @@
             else {
                 alert(data.message);
             }
+            $(".btn").prop('disabled',false);
         });
     }
 
     function setParams() {
+        
         var MAX_VALUE = 100;
         var selected_machine = document.getElementsByClassName("highlight");
         if (selected_machine.length == 0) {
@@ -127,11 +132,12 @@
         var fan_value = document.getElementById("fan_val").value;
         var heater_value = document.getElementById("heater_val").value;
 
-        var isInputOK = !isNaN(fan_value) && fan_value >=0 && fan_value <= MAX_VALUE && !isNaN(heater_value) && heater_value >=0 && heater_value <= MAX_VALUE;
+        var isInputOK = !isNaN(fan_value) && fan_value != "" && fan_value >=0 && fan_value <= MAX_VALUE && !isNaN(heater_value) && heater_value != "" && heater_value >=0 && heater_value <= MAX_VALUE;
         if (!isInputOK) {
             alert("Please enter a value between 0 and " + MAX_VALUE);
             return;
         }
+        $(".btn").prop('disabled',true);
 
         var request = $.ajax({
             url : BASE_URL + '/admin/setdevice',
@@ -150,6 +156,7 @@
             else {
                 alert(data.message);
             }
+            $(".btn").prop('disabled',false);
         });
     }
    
@@ -160,6 +167,9 @@
             return;
         }
         var selected_mid = selected_machine[0].getElementsByTagName('td')[0].innerHTML;
+        
+        $(".btn").prop('disabled',true);
+
         var request = $.ajax({
             url : BASE_URL + '/admin/gettemp',
             method : 'POST',
@@ -175,6 +185,9 @@
             else {
                 alert(data.message);
             }
+
+            $(".btn").prop('disabled',false);
+
         });
     }
 
@@ -185,6 +198,9 @@
             return;
         }
         var selected_mid = selected_machine[0].getElementsByTagName('td')[0].innerHTML;
+
+        $(".btn").prop('disabled',true);
+
         var request = $.ajax({
             url : BASE_URL + '/admin/monitor',
             method : 'POST',
@@ -203,6 +219,8 @@
             else {
                 alert(data.status_code);
             }
+            $(".btn").prop('disabled',false);
+
         });
     }
 

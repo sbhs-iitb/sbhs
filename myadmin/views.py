@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
 from django.core.exceptions import ObjectDoesNotExist
-from sbhs_server.tables.models import Board, Booking, Slot, Experiment
+from sbhs_server.tables.models import Board, Booking, Slot, Experiment, Account
 from sbhs_server import settings,sbhs
 import subprocess,json,serial,os, datetime
 # Create your views here.
@@ -133,7 +133,7 @@ def monitor_experiment(req):
 @login_required(redirect_field_name=None)
 def get_allocated_mids(req):
     checkadmin(req)
-    mid_count = Account.objects.select_related().filter('board__online'=1).values('board__mid', 'board_id').annotate(mcount=Count('board_id')).order_by('-mcount')
+    mid_count = Account.objects.select_related().filter(board__online=1).values('board__mid', 'board_id').annotate(mcount=Count('board_id')).order_by('mcount')
     return render(req, 'admin/changeMID.html', {"mid_count" : mid_count})
 
 def user_exists(username):
