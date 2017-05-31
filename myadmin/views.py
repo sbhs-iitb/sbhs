@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect
 from django.http import Http404,HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
+from django.db.models import Count
+from django.core.exceptions import ObjectDoesNotExist
 from sbhs_server.tables.models import Board, Booking, Slot, Experiment
 from sbhs_server import settings,sbhs
 import subprocess,json,serial,os, datetime
@@ -127,6 +129,37 @@ def monitor_experiment(req):
 
     data = {"user": current_user, "logs": logs}
     return HttpResponse(json.dumps({"status_code":200, "message":data}), content_type="application/json")
+
+@login_required(redirect_field_name=None)
+def get_allocated_mids(req):
+    checkadmin(req)
+    mid_count = Account.objects.select_related().filter('board__online'=1).values('board__mid', 'board_id').annotate(mcount=Count('board_id')).order_by('-mcount')
+    return render(req, 'admin/changeMID.html', {"mid_count" : mid_count})
+
+def user_exists(username):
+    try:
+        user = Account.objects.get(username=username)
+    except ObjectDoesNotExist:
+        return None
+    return user
+
+@csrf_exempt
+def update_allocated_mid(req):
+    checkadmin(req)
+    try:
+        username = req.POST.get("username")
+        board_id = req.POST.get("board_id")
+    except Exception as e:
+        return HttpResponse(json.dumps({"status_code":400, "message":"Invalid parameters"}), content_type="application/json")
+
+    user = user_exists(username)
+    if user is not None:
+        user.board_id = board_id
+        user.save()
+    else:
+        return HttpResponse(json.dumps({"status_code": 400, "message": "Username does not exist"}), content_type="application/json")
+
+    return HttpResponse(json.dumps({"status_code": 200, "message": "MID changed successfully"}), content_type="application/json")
 
 @login_required(redirect_field_name=None)
 def download_log(req, mid):
