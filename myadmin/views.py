@@ -6,7 +6,7 @@ from django.db.models import Count
 from django.core.exceptions import ObjectDoesNotExist
 from sbhs_server.tables.models import Board, Booking, Slot, Experiment, Account
 from sbhs_server import settings,sbhs
-import subprocess,json,serial,os, datetime
+import subprocess,json,serial,os, datetime, re
 # Create your views here.
 
 def checkadmin(req):
@@ -16,7 +16,7 @@ def checkadmin(req):
 @login_required(redirect_field_name=None)
 def index(req):
     checkadmin(req)
-    boards = Board.objects.order_by('online').all()
+    boards = Board.objects.order_by('-online').all()
     allotment_mode = "Random" if Board.can_do_random_allotment() else "Workshop"
     return render(req, 'admin/index.html', {"boards": boards, "allotment_mode": allotment_mode})
 
@@ -117,15 +117,24 @@ def monitor_experiment(req):
     except Exception as e:
         return HttpResponse(json.dumps({"status_code":400, "message":"Invalid MID"}), content_type="application/json")
 
-    current_booking_id, current_user = current_booking.id, current_booking.account.username
+    try:
+        current_booking_id, current_user = current_booking.id, current_booking.account.username
 
-    logfile = Experiment.objects.get(booking_id=current_booking_id).log
+        logfile = Experiment.objects.filter(booking_id=current_booking_id).order_by('created_at').reverse()[0].log
 
-    # get last 50 lines from logs
-    stdin,stdout = os.popen2("tail -n 10 "+logfile)
-    stdin.close()
-    logs = stdout.readlines(); stdout.close()
-    logs = "".join(logs)
+        # get last 20 lines from logs
+        stdin,stdout = os.popen2("tail -n 20 "+logfile)
+        stdin.close()
+        logs = stdout.readlines(); stdout.close()
+        regex = re.compile(r"^\d+\.\d+ \d{1,3} \d{1,3} \d{1,3}\.?\d+$")
+        screened_logs = []
+        for line in logs:
+            if regex.match(line):
+                screened_logs.append(line)
+
+        logs = "".join(screened_logs)
+    except Exception as e:
+        return HttpResponse(json.dumps({"status_code":500, "message":str(e)}), content_type="application/json")
 
     data = {"user": current_user, "logs": logs}
     return HttpResponse(json.dumps({"status_code":200, "message":data}), content_type="application/json")
@@ -135,6 +144,15 @@ def get_allocated_mids(req):
     checkadmin(req)
     mid_count = Account.objects.select_related().filter(board__online=1).values('board__mid', 'board_id').annotate(mcount=Count('board_id')).order_by('mcount')
     return render(req, 'admin/changeMID.html', {"mid_count" : mid_count})
+
+@csrf_exempt
+def get_users(req):
+    checkadmin(req)
+    try:
+        users = list(Account.objects.values_list("username", flat=True))
+        return HttpResponse(json.dumps({"status_code":200, "message":users}), content_type="application/json")
+    except Exception as e:
+        return HttpResponse(json.dumps({"status_code":500, "message":str(e)}), content_type="application/json")
 
 def user_exists(username):
     try:

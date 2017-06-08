@@ -10,7 +10,8 @@
 
             Username: <br>
 
-            <input id="username" type="text" placeholder="Enter Username">
+            <input type="text" id="username" list="users" placeholder="Enter Username">
+            <datalist id="users"></datalist>
 
             <br><br>
 
@@ -63,6 +64,55 @@
 
     }
 
+    // for live search of usernames
+    if (sessionStorage.getItem("fetchedUsers") == null) {
+        var BASE_URL = window.location.origin;
+        var request = $.ajax({
+            url: BASE_URL + '/admin/getusers',
+            method: 'POST'
+        });
+
+        request.done(function(data){
+            if (data.status_code == 200) {
+                sessionStorage.setItem("fetchedUsers", true);
+                populateUsers(data.message);
+                appendUsers();
+            }
+            else {
+                console.log("Sorry. Unable to implement live search");
+            }
+        });
+    }
+
+    function populateUsers(data) {
+        for (username of data) {
+            sessionStorage.setItem("sbhsuser"+username, username);
+        } 
+    }
+
+    function appendUsers() {   
+        if (sessionStorage.getItem("fetchedUsers")) {
+            var i, matchedUsers = [];
+            query = "sbhsuser";
+            for (i in sessionStorage) {
+              if (sessionStorage.hasOwnProperty(i)) {
+                if (i.match(query)) {
+                  value = sessionStorage.getItem(i);
+                  matchedUsers.push(value);
+                }
+              }
+            }
+            options = "";
+            for (matchedUser of matchedUsers) {
+                options += "<option>" + matchedUser + "</option>";
+            }
+            if (options.length != 0) {
+                document.getElementById("users").innerHTML = options;
+            }    
+        }
+    }
+
+    appendUsers();
     </script>
 </div>
 {% endblock %}
