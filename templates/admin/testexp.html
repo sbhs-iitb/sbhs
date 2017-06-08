@@ -214,7 +214,7 @@
             if (data.status_code == 200) {
                 console.log(data.message.logs.replace("/\n/g", "<br/>"));
                 document.getElementById("username").innerHTML = "User : " + data.message.user;
-                document.getElementById("log-data").innerHTML = "<pre>Date Time Heater Fan Temp</pre>" + data.message.logs.replace(new RegExp("\n","g"), "<br/>");
+                document.getElementById("log-data").innerHTML = "<pre>Timestamp Heater Fan Temp</pre>" + data.message.logs.replace(new RegExp("\n","g"), "<br/>");
             }
             else {
                 alert(data.status_code);
