@@ -22,7 +22,9 @@ def initiation(req):
             user1 = Account.objects.select_related().filter(id=user.id)
             user1 = user1[0]
             user_board = user1.board
-            if user_board.online:
+
+	    #allows admin to access the temporary offline devices but prohibits the users to do so
+            if user_board.online and (not user_board.temp_offline or user1.is_admin): 
                 slots = Slot.slots_now()
                 slot_ids = [s.id for s in slots]
                 now = datetime.datetime.now()
