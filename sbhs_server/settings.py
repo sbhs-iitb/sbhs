@@ -276,7 +276,7 @@ online_mids = [int(i) for i in boards.keys()]
 print "No of machines online : ", len(online_mids)
 
 import sys
-print >>sys.stderr, online_mids[1:33] #srikant
+print >>sys.stderr, online_mids[:] #srikant
 #srikant
 #f = open(os.path.join(BASE_DIR, 'maintenance/online_mids.txt'), 'w')
 #f.write(online_mids)
