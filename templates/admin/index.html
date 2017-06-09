@@ -23,7 +23,7 @@
                     {% for b in boards %}
                     <tr>
                         <td>{{ b.mid }}</td>
-                        <td><span class="label label-{% if b.online %}success{% else %}important{% endif %}">{% if b.online %}Online{% else %}Offline{% endif %}</span></td>
+                        <td><span style="cursor: pointer;" class="label label-{% if b.temp_offline %}warning{% elif b.online %}success{% else %}important{% endif %}">{% if b.temp_offline %}Temp Offline{% elif b.online %}Online{% else %}Offline{% endif %}</span></td>
                         <td><a href="{% url 'webcam_show_video_to_admin' b.mid %}" target="_blank">View image</a></td>
                         <td><a href="{% url 'admin_profile' b.mid %}">View</a></td>
                         <td><a href="{% url 'admin_logs' b.mid %}">Download</a></td>
@@ -34,4 +34,43 @@
         </div>
     </div>
 </div>
+
+<script type="text/javascript">
+    $(".label-success").click(toggleState);
+    $(".label-warning").click(toggleState);
+
+    function toggleState() {
+        var BASE_URL = window.location.origin;
+        if (window.confirm("Are you sure you want to toggle the state?")) {
+            var board_class = $(this).attr("class");
+            var selected_mid = $(this).parent().prev().html();
+
+            var request = $.ajax({
+                url : BASE_URL + '/admin/toggledevice',
+                method : 'POST',
+                data : {
+                    'mid' : selected_mid
+                }
+            });
+
+            request.done(function(data){
+                if (data.status_code == 200) {
+                    if (board_class.indexOf("label-success") > -1) {
+                        $(this).removeClass("label-success");
+                        $(this).addClass("label-warning");
+                        $(this).html("Temp Offline");
+                    }
+                    else {
+                        $(this).removeClass("label-warning");
+                        $(this).addClass("label-success");
+                        $(this).html("Online");   
+                    }
+                }
+                else {
+                    alert("Sorry! The state could not be toggled.");
+                }
+            });
+        }
+    }
+</script>
 {% endblock %}
