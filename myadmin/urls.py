@@ -16,6 +16,7 @@ urlpatterns = [
     url(r'^admin/updatemid/?$', views.update_allocated_mid, name='admin_updatemid'),
     url(r'^admin/changemid/?$', views.get_allocated_mids, name='admin_getmids'),
     url(r'^admin/getusers/?$', views.get_users, name='admin_users'),
+    url(r'^admin/toggledevice', views.toggle_device_status, name='toggle_status'),
     
     url(r'^admin/toggle_allotment_mode/?$', views.toggle_allotment_mode, name='admin_toggle_allotment_mode'),
 ]

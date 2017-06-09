@@ -154,6 +154,28 @@ def get_users(req):
     except Exception as e:
         return HttpResponse(json.dumps({"status_code":500, "message":str(e)}), content_type="application/json")
 
+
+@csrf_exempt
+def toggle_device_status(req):
+    checkadmin(req)
+
+    try : 
+        mid = req.POST.get('mid')
+    except Exception as e:
+        return HttpResponse(json.dumps({"status_code":400, "message":"Invalid parameters"}), content_type="application/json")
+
+    try:
+        brd = Board.objects.get(mid = mid)
+
+        brd.temp_offline = not brd.temp_offline
+
+        brd.save()
+
+        return HttpResponse(json.dumps({"status_code":200, "message":"Toggle successful"}), content_type="application/json")
+    except Exception as e:
+        return HttpResponse(json.dumps({"status_code":400, "message":"Unsuccessful"}), content_type="application/json")
+
+
 def user_exists(username):
     try:
         user = Account.objects.get(username=username)
