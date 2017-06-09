@@ -5,3 +5,4 @@ log/
 static/img/webcam/
 experiments/
 sbhs.sqlite3
+sbhs_server/tables/migrations

@@ -45,7 +45,6 @@ class Migration(migrations.Migration):
                 ('trashed_at', models.DateTimeField(blank=True, editable=False, null=True, verbose_name='Trashed')),
                 ('mid', models.IntegerField(unique=True)),
                 ('online', models.BooleanField(default=True)),
-                ('temp_offline', models.BooleanField(default=False)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
             ],
