@@ -13,6 +13,7 @@ class Board(TrashableMixin):
 
     mid                 = models.IntegerField(unique=True)
     online              = models.BooleanField(default=True)
+    temp_offline        = models.BooleanField(default=False)
 
     created_at          = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at          = models.DateTimeField(auto_now=True, editable=False)
