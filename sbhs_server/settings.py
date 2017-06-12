@@ -62,8 +62,7 @@ INSTALLED_APPS = (
     'undelete',
     #'yaksh',
     'taggit',
-    #'corsheaders'
-    'django_crontab',
+    #'corsheaders',
 
     'account',
     'myadmin',
@@ -99,11 +98,11 @@ if is_production:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql', 
-            'NAME': 'database_name',
-            'USER': 'username',
-            'PASSWORD': 'password',
-            'HOST': 'localhost',
-            'PORT': '3306',
+            'NAME': credentials.DB_NAME,
+            'USER': credentials.DB_USER,
+            'PASSWORD': credentials.DB_PASS,
+            'HOST': credentials.DB_HOST,
+            'PORT': credentials.DB_PORT,
         }
     }
 else:
@@ -184,10 +183,6 @@ TEMPLATES = [
             ],
         },
     },
-]
-
-CRONJOBS = [
-    ('2 * * * *', 'maintenance.health_monitor.main', '>> /tmp/health_monitor.log'),
 ]
 
 import warnings
