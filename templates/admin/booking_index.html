@@ -19,7 +19,7 @@
                 <tbody>
                     {% for b in bookings %}
                     <tr>
-                        <td>{{ b.booking_date }}</td>
+                        <td>{{ b.booking_date|date:"M d, Y" }}</td>
                         <td>{{ b.slot }}</td>
                         <td>{{ b.account.board.mid }}</td>
                         <td>{{ b.account.name }}</td>
