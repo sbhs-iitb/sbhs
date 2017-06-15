@@ -13,80 +13,17 @@ def check_connection(req):
     return HttpResponse("TESTOK")
 
 @csrf_exempt
-def initiation(req):
+def initial_login(req):
     username = req.POST.get("username")
-    password = req.POST.get("password")
-    user = authenticate(username=username, password=password)
-    if user is not None:
-        if user.is_active:
-            user1 = Account.objects.select_related().filter(id=user.id)
-            user1 = user1[0]
-            user_board = user1.board
+    rpi_ip = ''
+    try:
+        assigned_mid = Account.objects.select_related().get(username=username).board.mid
+    except Exception as e:
+        return HttpResponse(json.dumps({"STATUS": 400, "MESSAGE": "Invalid username"}))
+            
+    rpi_ip = settings.pi_ip_map[str(assigned_mid)]
 
-	    #allows admin to access the temporary offline devices but prohibits the users to do so
-            if user_board.online and (not user_board.temp_offline or user1.is_admin): 
-                slots = Slot.slots_now()
-                slot_ids = [s.id for s in slots]
-                now = datetime.datetime.now()
-                bookings = user.booking_set.filter(booking_date__year=now.year,
-                                                booking_date__month=now.month,
-                                                booking_date__day=now.day,
-                                                slot_id__in=slot_ids).select_related("slot")
-                try:
-                    cur_booking = bookings[0]
-                    active_slot = cur_booking.slot
-                except:
-                    cur_booking = None
-                    active_slot = None
-
-                if active_slot is not None:
-                    endtime = cur_booking.end_time()
-                    if now < endtime:
-                        filename = datetime.datetime.strftime(now, "%Y%b%d_%H_%M_%S.txt")
-                        logdir = os.path.join(settings.EXPERIMENT_LOGS_DIR, user.username)
-                        if not os.path.exists(logdir):
-                            os.makedirs(logdir)
-
-                        f = open(os.path.join(logdir, filename), "a")
-                        f.close()
-
-                        LOGIN(req, user)
-
-                        e = Experiment()
-                        e.booking=cur_booking
-                        e.log=os.path.join(logdir, filename)
-                        e.save()
-
-                        key = str(user_board.mid)
-			
-                        settings.boards[key]["experiment_id"] = e.id
-                        global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + key + ".log"
-                        with open(global_logfile, "a") as global_loghandler:
-                            data = "\n\n===================New experiment====================\nUsername : " + user.username + "\nExperiment Id : " + str(e.id) + "\n"
-                            global_loghandler.write(data)
-                            
-                        reset(req)
-
-                        STATUS = 1
-                        MESSAGE = filename
-                    else:
-                        reset(req)
-                        STATUS = 0
-                        MESSAGE = "Slot has ended. Please book the next slot to continue the experiment."
-                else:
-                    STATUS = 0
-                    MESSAGE = "You haven't booked this slot."
-            else:
-                STATUS = 0
-                MESSAGE = "Your SBHS is offline. Please contact the Vlabs team."
-        else:
-            STATUS = 0
-            MESSAGE = "Your account is not activated yet. Please check your email for activation link."
-    else:
-        STATUS = 0
-        MESSAGE = "Invalid username or password"
-
-    return HttpResponse(json.dumps({"STATUS": STATUS, "MESSAGE": MESSAGE}))
+    return HttpResponse(json.dumps({"STATUS": 200, "MESSAGE": rpi_ip}))
 #    return HttpResponse(key)
 # @login_required(redirect_field_name=None)
 @csrf_exempt
