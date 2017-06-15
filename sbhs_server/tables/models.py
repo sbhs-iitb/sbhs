@@ -45,7 +45,7 @@ class Board(TrashableMixin):
                 for o in online_boards:
                     if o > last_allocated_MID:
                         return Board.objects.get(mid=o).id
-            except ObjectDoesNotExist:
+            except Exception as e:
                 pass
             
             # check if there is at least one online board
@@ -83,7 +83,7 @@ class Account(TrashableMixin, AbstractBaseUser):
         return self.name
 
     def send_confirmation(self):
-        message = """Hi,\n\nPlease visit the link """ + settings.BASE_URL +  """account/confirm/"""
+        message = """Hi,\n\nPlease visit the link """ + settings.BASE_URL +  """sbhs/account/confirm/"""
         message = message + self.confirmation_token()
         message = message + """ to confirm your account.\n\n\nRegards,\nVlabs Team"""
         mailer.email(self.email, "Please confirm your account", message)
