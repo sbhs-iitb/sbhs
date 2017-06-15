@@ -8,7 +8,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 import sys #srikant
-import socket
+import socket,json
 import sbhs_server.credentials as credentials
 
 
@@ -37,6 +37,7 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
     "192.168.43.208",
     "192.168.43.144",
+    "10.42.0.1",
 ]
 
 if not DEBUG:
@@ -94,7 +95,7 @@ WSGI_APPLICATION = 'sbhs_server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-if is_production:
+if not is_production:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql', 
@@ -149,7 +150,7 @@ if is_production:
     FORCE_SCRIPT_NAME = "/sbhs"
     USE_X_FORWARDED_HOST = True
 else:
-    BASE_URL = "http://127.0.0.1:8000/"
+    BASE_URL = "http://127.0.0.1/"
 
 SBHSCLIENT_STATIC_DIR = os.path.join(BASE_DIR, "client_static")
 STATICFILES_DIRS = (
@@ -248,25 +249,12 @@ else:
 
 SBHS_GLOBAL_LOG_DIR = os.path.join(BASE_DIR, 'log')
 
-from sbhs_server import sbhs
-boards = {}
-MID_PORT_MAP={}
-with open(os.path.join(BASE_DIR, 'map_machine_ids.txt')) as f:
-    for line in f:
-        try:
-            data = line.split("=")
-            brd = sbhs.Sbhs()
-            b = brd.connect(int(data[0]))
-            assert b == True
-            key = int(brd.getMachineId())
-            assert key > 0
-            brd.reset_board()
-            MID_PORT_MAP[key]=data[1].strip()
-            boards[str(key)] = {"board": brd, "experiment_id": None}
-        except:
-            pass
+with open(os.path.join(BASE_DIR, "sbhs_server/pi-ip.json"),'r') as fh:
+    json_data = fh.read()
 
-online_mids = [int(i) for i in boards.keys()]
+pi_ip_map = json.loads(json_data)
+
+online_mids = list(pi_ip_map.keys())
 
 print "No of machines online : ", len(online_mids)
 
