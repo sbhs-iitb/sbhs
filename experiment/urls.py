@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^experiment/reset/?$', views.reset, name='experiment_reset'),
     url(r'^experiment/logs/?$', views.logs, name='experiment_logs'),
     url(r'^experiment/logs/([0-9]+)/(.+)?$', views.download_log, name='experiment_logs'),
+    url(r'^experiment/initiallogin/?$', views.initial_login, name='experiment_initial'),
 
     url(r'^admin/validate_log_file/?$', views.validate_log_file, name='experiment_validate_log'),
 ]

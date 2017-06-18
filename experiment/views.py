@@ -12,6 +12,14 @@ from sbhs_server import settings
 def check_connection(req):
     return HttpResponse("TESTOK")
 
+
+
+@csrf_exempt
+def initial_login(req):
+    rpi_ip = ''
+    return HttpResponse(json.dumps({"STATUS": 200, "MESSAGE": {"IS_IP":"0","DATA":rpi_ip}}))
+
+
 @csrf_exempt
 def initiation(req):
     username = req.POST.get("username")
