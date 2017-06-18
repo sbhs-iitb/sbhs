@@ -1,15 +1,14 @@
 import json
 
 pi_ip_map = {}
-ipaddrs = []
 
-with open("temp/ipaddrs.txt", "r") as filehandler:
+with open("RPi_data/ipaddrs.txt", "r") as filehandler:
 	ipaddrs = filehandler.readlines()
 
 ipaddrs = [ip.strip() for ip in ipaddrs]
 
 for ip in ipaddrs:
-	filename = "temp/" + ip + ".txt"
+	filename = "RPi_data/map/" + ip + ".txt"
 	with open(filename, "r") as filehandler:
 		for line in filehandler:
 			try:

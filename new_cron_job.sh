@@ -12,10 +12,10 @@ source ../bin/activate
 #source ./bin/activate
 #python sbhs_server/scan_machines.py
 bash sbhs_server/scan_rpis.sh
+python manage.py send_report
 #python offline_reconnect.py
 python manage.py makemigrations
 python manage.py migrate
-#python manage.py initialize_machines
 python manage.py generate_checksum
 touch index.wsgi
 python manage.py log_generator
