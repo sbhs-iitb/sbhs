@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from sbhs_server import settings, helpers
+from sbhs_server.tables.models import Board
 import os, json
 
 class Command(BaseCommand):
@@ -26,8 +27,18 @@ class Command(BaseCommand):
 			with open(os.path.join(settings.BASE_DIR, filename), "r") as filehandler:
 				data = filehandler.read()
 			data = json.loads(data)
-			new_offlines += data["new_offlines"]
+			new_offlines.append(set(data["new_offlines"]))
 			faulty_boards.update(data["faulty_boards"])
+
+		# Find intersection of offline boards from all RPi's
+		new_offlines = list(set.intersection(*new_offlines))
+
+		# Update database
+		if len(new_offlines) > 0:
+			Board.objects.filter(mid__in=new_offlines).update(online=False)
+		if len(faulty_boards.keys()) > 0:
+			Board.objects.filter(mid__in=faulty_boards.keys()).update(online=True,temp_offline=True)
+
 
 		# Compose body for the email
 		message = "SBHS Administrator,\n\n"
