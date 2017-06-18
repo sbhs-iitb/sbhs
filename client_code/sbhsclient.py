@@ -12,6 +12,7 @@ global_cur_temp = 0
 global_iter = 0
 global_remaining_time = 0
 global_error = ""
+HOST_URL = "192.168.43.144/sbhs/"
 
 class SBHSClient(Bridge):
 	def __init__(self):
@@ -20,6 +21,8 @@ class SBHSClient(Bridge):
 		super(SBHSClient, self).__init__()
 		self.app = htmlPy.AppWindow(title="SBHS Vlabs Client", width=360, height=600, x_pos=32, y_pos=32)
 		self.app.window.setFixedSize(360, 600)
+
+		#setting up urllib object and host link
 		try:
 			config_options = {}
 			with open(os.path.join(self.path, "config.txt")) as f:
@@ -32,9 +35,8 @@ class SBHSClient(Bridge):
 			if config_options["base_link"] != "None" and len(config_options["base_link"]) > 2:
 				link = config_options["base_link"]
 			else:
-				link = "http://vlabs.iitb.ac.in/"
-		#############################################
-			link = "http://192.168.43.144/sbhs/"
+				link = HOST_URL
+
 			if config_options["use_proxy"] != "Yes":
 				proxy_handler = urllib2.ProxyHandler({})
 				logging.debug("Proxy: None")
@@ -48,16 +50,15 @@ class SBHSClient(Bridge):
 				proxy_handler = urllib2.ProxyHandler({config_options["proxy_type"]: proxy_url})
 				logging.debug("Proxy: " + config_options["proxy_type"] + ": " + proxy_url)
 			logging.debug("BASE_LINK: " + link)
-		except Exception:
+		except Exception as e:
 			logging.exception("Error while loading config. Switching to default configuration.")
-			link = "http://vlabs.iitb.ac.in/"
-		#############################################
-			link = "http://192.168.43.144/sbhs/"
+			link = HOST_URL
 			proxy_handler = urllib2.ProxyHandler({})
 			logging.debug("Proxy: None")
 			logging.debug("BASE_LINK: " + link)
 
-		self.base_url = link + "experiment/"
+		#initializing class variables
+		self.base_url = ""
 		self.version = "3"
 		self.urllib2 = urllib2
 		self.logdir = "logs"
@@ -70,8 +71,7 @@ class SBHSClient(Bridge):
 		self.remaining_time = 0
 		self.error = ""
 		self.status = False
-		self.machine_ip=""#ADDED
-		self.machine_url=""#ADDED
+		self.machine_ip=""
 		self.link = link
 
 		cookie_support = cookielib.CookieJar()
@@ -83,8 +83,8 @@ class SBHSClient(Bridge):
 	@attach(result=str)
 	def check_connection(self):
 		try:
-			print self.base_url+"check_connection"
-			br = urllib2.urlopen(self.base_url + "check_connection")
+			print self.link+"experiment/check_connection"
+			br = urllib2.urlopen(self.link + "experiment/check_connection")
 			return br.read()
 		except Exception:
 			logging.exception("Failed in checking server connection")
@@ -93,7 +93,7 @@ class SBHSClient(Bridge):
 	@attach(result=bool)
 	def client_version(self):
 		try:
-			br = urllib2.urlopen(self.base_url + "client_version")
+			br = urllib2.urlopen(self.link + "experiment/client_version")
 			return br.read() == self.version
 		except Exception:
 			logging.exception("Failed in checking client version")
@@ -105,26 +105,36 @@ class SBHSClient(Bridge):
 			username = str(username)
 			password = str(password)
 
-			input_data = urllib.urlencode({"username": username, "password": password})
-			
-			ip_req = self.urllib2.Request(self.base_url + "initiate", input_data) 
+			#Setting Up the base_url on which experiment is to be done
+			input_data = urllib.urlencode({"username": username, "password": password})			
+			ip_req = self.urllib2.Request(self.link + "experiment/initallogin", input_data) 
 			json_response = urllib2.urlopen(ip_req)
-
 			data = json.loads(json_response.read())
+			
 			if not data["STATUS"]==200:
-				self.error = data["MESSAGE"]
+				self.error = data["MESSAGE"]["DATA"]
 				global_error = self.error
-				return data["MESSAGE"]
+				return data["MESSAGE"]["DATA"]
 
-			self.machine_ip = data["MESSAGE"]
-			self.machine_url = self.base_url + "/pi/" + self.machine_ip +"/pi/experiment/"
 
-			req = self.urllib2.Request(self.machine_url + "initiate", input_data)
+			if data["IS_IP"] == "1":
+				#For architecture with RPis connected through LAN
+				self.machine_ip = data["MESSAGE"]["DATA"]
+				self.base_url = self.link + "experiment/pi/" + self.machine_ip +"/pi/experiment/"
+			else:
+				#For architecture with SBHS directly connected to master Server 
+				self.base_url = self.link + "experiment/"
+
+			#Initiate a new Experiment on base_url
+			req = self.urllib2.Request(self.base_url + "initiate", input_data)
 			br = urllib2.urlopen(req)
-
 			data = json.loads(br.read())
+			
 			if data["STATUS"] == 1:
+				#On Successful creation of new experiment
+
 				self.username = username
+				
 				if not os.path.exists(self.logdir):
 					os.makedirs(self.logdir)
 				logdir = os.path.join(self.logdir, username)
@@ -134,13 +144,16 @@ class SBHSClient(Bridge):
 				self.logfile_handler = open(os.path.join(logdir, data["MESSAGE"]), "a")
 				self.status = True
 				self.app.execute_javascript("document.getElementById('logfile').innerHTML='" + data["MESSAGE"] + "'")
+				
 				f = open(self.scilabreadfname, 'w')
 				f.close()
 				f = open(self.scilabwritefname, 'w')
 				f.close()
+				
 				global global_error
 				global_error = ""
 				return "TRUE"
+			
 			else:
 				self.error = data["MESSAGE"]
 				global_error = self.error
@@ -230,7 +243,7 @@ class SBHSClient(Bridge):
 			srv_data = False
 			while not srv_data:
 				try:
-					url_com = self.machine_url + 'experiment'
+					url_com = self.base_url + 'experiment'
 					postdata = urllib.urlencode({
 						'iteration' : cur_iter,
 						'heat' : cur_heat,
@@ -310,8 +323,8 @@ class SBHSClient(Bridge):
 		import sys
 		sys.exit(runner())
 	def reset(self):
-		print self.machine_url + "reset"
-		self.urllib2.urlopen(self.machine_url + "reset")
+		print self.base_url + "reset"
+		self.urllib2.urlopen(self.base_url + "reset")
 
 if __name__ == "__main__":
 	s = SBHSClient()

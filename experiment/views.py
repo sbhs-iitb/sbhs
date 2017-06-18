@@ -19,11 +19,11 @@ def initial_login(req):
     try:
         assigned_mid = Account.objects.select_related().get(username=username).board.mid
     except Exception as e:
-        return HttpResponse(json.dumps({"STATUS": 400, "MESSAGE": "Invalid username"}))
+        return HttpResponse(json.dumps({"STATUS": 400, "MESSAGE": {"IS_IP":"1","DATA":"Invalid username"}}))
             
     rpi_ip = settings.pi_ip_map[str(assigned_mid)]
 
-    return HttpResponse(json.dumps({"STATUS": 200, "MESSAGE": rpi_ip}))
+    return HttpResponse(json.dumps({"STATUS": 200, "MESSAGE": {"IS_IP":"1","DATA":rpi_ip}}))
 #    return HttpResponse(key)
 # @login_required(redirect_field_name=None)
 @csrf_exempt
