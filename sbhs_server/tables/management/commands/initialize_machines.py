@@ -3,6 +3,7 @@ from sbhs_server import settings
 from sbhs_server.tables.models import Board
 from sbhs_server import helpers
 import serial,time
+from datetime import datetime
 
 class Command(BaseCommand):
 	args = ''
@@ -49,8 +50,6 @@ class Command(BaseCommand):
 			return result
 
 
-
-
 		first_reading,second_reading,final_reading={},{},{}
 
 
@@ -59,13 +58,15 @@ class Command(BaseCommand):
 			write_to_sbhs(value['board'].boardcon,253,0)
 			write_to_sbhs(value['board'].boardcon,254,50)
 
-		time.sleep(40)
+		if len(current_connections.keys()) > 0:
+			time.sleep(30)
 
 		for key,value in current_connections.iteritems():
 			second_reading[key] = read_from_sbhs(value['board'].boardcon,255)
 			write_to_sbhs(value['board'].boardcon,253,100)
 
-		time.sleep(40)
+		if len(current_connections.keys()) > 0:
+			time.sleep(50)
 
 		for key,value in current_connections.iteritems():
 			final_reading[key] = read_from_sbhs(value['board'].boardcon,255)
@@ -116,7 +117,7 @@ class Command(BaseCommand):
 
 
 		message = "SBHS Administrator,\n\n"
-		message += "Following issue requires immidiate attention.\n\n"
+		message += "Following issue requires immediate attention.\n\n"
 		if len(new_offlines)>0:
 			message += "SBHS could not be connected\n"
 			for n in new_offlines:
@@ -127,21 +128,24 @@ class Command(BaseCommand):
 					message += "MID : {}   Cause : {}\n" .format(key,faulty_boards[key])
 		message += "\nYou can check the SBHS status on http://vlabs.iitb.ac.in/sbhs/admin/."
 		message += " Possible correction actions are:\n"
-		message += "1. Run this command without brackets -> ( cd $SBHS_SERVER_ROOT; ./cron_job.sh )\n"
+		message += "1. Run this command without brackets -> ( cd $SBHS_SERVER_ROOT; ./new_cron_job.sh )\n"
 		message += "2. If same machine comes offline multiple times, replacement of the machine is advised.\n\n\n"
 		message += "Regards,\nSBHS Vlabs Server Code"
 
 		print "New offline board mids", new_offlines
 		subject = "SBHS Vlabs: Notice - SBHS not connected"
 
+		try:
+			if len(new_offlines) > 0 or len(faulty_boards)>0:
+				for admin in settings.SBHS_ADMINS:
+					helpers.mailer.email(admin[2], subject, message)
+		except Exception as e:
+			with open("mail_dump.txt", "a") as file:
+				delimiter = " " + '#'*10 + " "
+				file.write("\n" + delimiter + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + delimiter + "\n")
+				file.write(message)
+				print message
 
-		print message
-
-		print len(new_offlines) > 0 or len(faulty_boards)>0
-
-		if len(new_offlines) > 0 or len(faulty_boards)>0:
-			for admin in settings.SBHS_ADMINS:
-				helpers.mailer.email(admin[2], subject, message)
 
 		Board.objects.filter(mid__in=current_onlines).update(online=True)
 		Board.objects.exclude(mid__in=current_onlines).update(online=False)

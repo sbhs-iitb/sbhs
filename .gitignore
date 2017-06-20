@@ -6,3 +6,6 @@ static/img/webcam/
 experiments/
 sbhs.sqlite3
 sbhs_server/tables/migrations
+date.txt
+new.csv
+mail_dump.txt

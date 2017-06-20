@@ -1,2 +1,8 @@
-4=/dev/ttyUSB2
-3=/dev/ttyUSB1
+4=/dev/ttyUSB7
+2=/dev/ttyUSB6
+3=/dev/ttyUSB5
+1=/dev/ttyUSB4
+10=/dev/ttyUSB3
+12=/dev/ttyUSB2
+13=/dev/ttyUSB1
+11=/dev/ttyUSB0

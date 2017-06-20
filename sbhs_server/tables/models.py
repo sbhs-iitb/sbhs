@@ -45,7 +45,7 @@ class Board(TrashableMixin):
                 for o in online_boards:
                     if o > last_allocated_MID:
                         return Board.objects.get(mid=o).id
-            except ObjectDoesNotExist:
+            except Exception as e:
                 pass
             
             # check if there is at least one online board
