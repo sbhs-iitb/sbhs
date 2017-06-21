@@ -55,26 +55,34 @@ class Command(BaseCommand):
 
 		for key,value in current_connections.iteritems():
 			first_reading[key]=read_from_sbhs(value['board'].boardcon,255)
+			time.sleep(0.1)
 			write_to_sbhs(value['board'].boardcon,253,0)
-			write_to_sbhs(value['board'].boardcon,254,50)
+			time.sleep(0.1)
+			write_to_sbhs(value['board'].boardcon,254,60)
+			time.sleep(0.1)
 
 		if len(current_connections.keys()) > 0:
-			time.sleep(30)
+			time.sleep(50)
 
 		for key,value in current_connections.iteritems():
 			second_reading[key] = read_from_sbhs(value['board'].boardcon,255)
+			time.sleep(0.1)
 			write_to_sbhs(value['board'].boardcon,253,100)
+			time.sleep(0.1)
 
 		if len(current_connections.keys()) > 0:
 			time.sleep(50)
 
 		for key,value in current_connections.iteritems():
 			final_reading[key] = read_from_sbhs(value['board'].boardcon,255)
+			time.sleep(0.1)
 
 
 		for key,value in current_connections.iteritems():
 			write_to_sbhs(value['board'].boardcon,253,100)
+			time.sleep(0.1)
 			write_to_sbhs(value['board'].boardcon,254,0)
+			time.sleep(0.1)
 
 
 		print first_reading
@@ -145,9 +153,11 @@ class Command(BaseCommand):
 				file.write("\n" + delimiter + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + delimiter + "\n")
 				file.write(message)
 				print message
-
+		
+		faulty_mids = list(faulty_boards.keys())
 
 		Board.objects.filter(mid__in=current_onlines).update(online=True)
+		Board.objects.filter(mid__in=faulty_mids).update(temp_offline=True)
 		Board.objects.exclude(mid__in=current_onlines).update(online=False)
 
 		self.stdout.write('Boards loaded')
