@@ -68,10 +68,10 @@ def initiation(req):
                         key = str(user_board.mid)
 			
                         settings.boards[key]["experiment_id"] = e.id
-                        global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + key + ".log"
-                        with open(global_logfile, "a") as global_loghandler:
-                            data = "\n\n===================New experiment====================\nUsername : " + user.username + "\nExperiment Id : " + str(e.id) + "\n"
-                            global_loghandler.write(data)
+                        # global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + key + ".log"
+                        # with open(global_logfile, "a") as global_loghandler:
+                        #     data = "\n\n===================New experiment====================\nUsername : " + user.username + "\nExperiment Id : " + str(e.id) + "\n"
+                        #     global_loghandler.write(data)
                             
                         reset(req)
 
@@ -152,7 +152,8 @@ def experiment(req):
             MESSAGE = "You haven't booked this slot."
 
         return HttpResponse(json.dumps({"STATUS": STATUS, "MESSAGE": MESSAGE}))
-    except Exception:
+    except Exception as e:
+        print str(e)
         return HttpResponse(json.dumps({"STATUS": 0, "MESSAGE": "Invalid input. Perhaps the slot has ended. Please book the next slot to continue the experiment."}))
 
 @csrf_exempt
@@ -215,11 +216,9 @@ def log_data(sbhs, mid, experiment_id, heat=None, fan=None, temp=None):
         temp = sbhs.getTemp()
 
     data = "%f %s %s %s\n" % (time.time(), str(heat), str(fan), str(temp))
-    experiment_logfile = Experiment.objects.get(id=experiment_id).log
     global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + str(mid) + ".log"
-    with open(global_logfile, "a") as global_loghandler, open(experiment_logfile, "a") as experiment_loghandler:
+    with open(global_logfile, "a") as global_loghandler:
         global_loghandler.write(data)
-        experiment_loghandler.write(data) 
 
 def validate_log_file(req):
     import hashlib
