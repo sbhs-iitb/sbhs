@@ -12,7 +12,7 @@ global_cur_temp = 0
 global_iter = 0
 global_remaining_time = 0
 global_error = ""
-HOST_URL = "192.168.43.144/sbhs/"
+HOST_URL = "http://10.102.152.15/sbhs/experiment/"
 
 class SBHSClient(Bridge):
 	def __init__(self):
@@ -83,8 +83,8 @@ class SBHSClient(Bridge):
 	@attach(result=str)
 	def check_connection(self):
 		try:
-			print self.link+"experiment/check_connection"
-			br = urllib2.urlopen(self.link + "experiment/check_connection")
+			print self.link+"check_connection"
+			br = urllib2.urlopen(self.link + "check_connection")
 			return br.read()
 		except Exception:
 			logging.exception("Failed in checking server connection")
@@ -93,7 +93,7 @@ class SBHSClient(Bridge):
 	@attach(result=bool)
 	def client_version(self):
 		try:
-			br = urllib2.urlopen(self.link + "experiment/client_version")
+			br = urllib2.urlopen(self.link + "client_version")
 			return br.read() == self.version
 		except Exception:
 			logging.exception("Failed in checking client version")
@@ -107,7 +107,7 @@ class SBHSClient(Bridge):
 
 			#Setting Up the base_url on which experiment is to be done
 			input_data = urllib.urlencode({"username": username, "password": password})			
-			ip_req = self.urllib2.Request(self.link + "experiment/initallogin", input_data) 
+			ip_req = self.urllib2.Request(self.link + "initiallogin", input_data) 
 			json_response = urllib2.urlopen(ip_req)
 			data = json.loads(json_response.read())
 			
@@ -117,13 +117,13 @@ class SBHSClient(Bridge):
 				return data["MESSAGE"]["DATA"]
 
 
-			if data["IS_IP"] == "1":
+			if data["MESSAGE"]["IS_IP"] == "1":
 				#For architecture with RPis connected through LAN
 				self.machine_ip = data["MESSAGE"]["DATA"]
-				self.base_url = self.link + "experiment/pi/" + self.machine_ip +"/pi/experiment/"
+				self.base_url = self.link + "pi/" + self.machine_ip +"/pi/experiment/"
 			else:
 				#For architecture with SBHS directly connected to master Server 
-				self.base_url = self.link + "experiment/"
+				self.base_url = self.link 
 
 			#Initiate a new Experiment on base_url
 			req = self.urllib2.Request(self.base_url + "initiate", input_data)
