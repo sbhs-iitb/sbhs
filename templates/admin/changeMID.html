@@ -17,8 +17,8 @@
 
             <select id="mid">
                 {% for mid in mid_count %}
-                <option id = "{{ mid.board_id }}">
-                    {{ mid.board__mid }}-{{mid.mcount}}
+                <option id = "{{ mid.2 }}">
+                    {{ mid.0 }}-{{mid.1}}
                 </option>
                 {% endfor %}
             </select>
@@ -53,6 +53,7 @@
             request.done(function(data){
                 if(data.status_code == 200) {
                     alert(data.message);
+                    $("#update-btn").prop('disabled',false);
                     location.reload();
                 }
                 else {
