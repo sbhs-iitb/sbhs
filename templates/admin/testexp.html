@@ -13,6 +13,10 @@
         padding: 15px;
         display: none;
     }
+    #log-data > span {
+        word-spacing: 5em;
+        margin-left: 3em; 
+    }
 </style>
 <div class="container">
     <div class="row">
@@ -64,7 +68,7 @@
 
         <div class="span5" id="monitor-logs">
             <strong><p id="username"></p></strong>
-            <p id="log-data" style="word-spacing: 4em"></p>
+            <p id="log-data" style="word-spacing: 3em"></p>
             <button class="btn btn-primary" onclick="getLogs()">Refresh Logs</button>
         </div>
 
@@ -214,10 +218,11 @@
             if (data.status_code == 200) {
                 console.log(data.message.logs.replace("/\n/g", "<br/>"));
                 document.getElementById("username").innerHTML = "User : " + data.message.user;
-                document.getElementById("log-data").innerHTML = "<pre>Timestamp Heater Fan Temp</pre>" + data.message.logs.replace(new RegExp("\n","g"), "<br/>");
+                document.getElementById("log-data").innerHTML = "<pre>Iteration Heater Fan Temp</pre><span>" + data.message.logs.replace(new RegExp("\n","g"), "</span><br/><span>") + "</span>";
             }
             else {
-                alert(data.status_code);
+                console.log(data.message);
+                alert(data.message);
             }
             $(".btn").prop('disabled',false);
 
