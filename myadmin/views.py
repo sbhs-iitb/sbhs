@@ -3,8 +3,9 @@ from django.http import Http404,HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
+from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
-from sbhs_server.tables.models import Board, Booking, Slot, Experiment, Account
+from sbhs_server.tables.models import Board, Booking, Slot, Experiment, Account, Webcam
 from sbhs_server import settings,sbhs
 import subprocess,json,serial,os, datetime, re
 # Create your views here.
@@ -36,6 +37,8 @@ def booking_index(req):
 def webcam_index(req):
     checkadmin(req)
     boards = Board.objects.all()
+    for board in boards:
+        Webcam.load_image(board.mid)
     return render(req, 'admin/webcam_index.html', {"boards": boards})
 
 @login_required(redirect_field_name=None)
@@ -121,20 +124,22 @@ def monitor_experiment(req):
         current_booking_id, current_user = current_booking.id, current_booking.account.username
 
         logfile = Experiment.objects.filter(booking_id=current_booking_id).order_by('created_at').reverse()[0].log
-
-        # get last 20 lines from logs
-        stdin,stdout = os.popen2("tail -n 20 "+logfile)
+    except:
+        return HttpResponse(json.dumps({"status_code":417, "message":"Experiment hasn't started"}), content_type="application/json")
+        
+    try:
+        # get last 10 lines from logs
+        stdin,stdout = os.popen2("tail -n 10 "+logfile)
         stdin.close()
         logs = stdout.readlines(); stdout.close()
-        regex = re.compile(r"^\d+\.\d+ \d{1,3} \d{1,3} \d{1,3}\.?\d+$")
         screened_logs = []
         for line in logs:
-            if regex.match(line):
-                screened_logs.append(line)
+            screened_line = " ".join(line.split()[:4]) + "\n"
+            screened_logs.append(screened_line)
 
         logs = "".join(screened_logs)
     except Exception as e:
-        return HttpResponse(json.dumps({"status_code":500, "message":str(e)}), content_type="application/json")
+        return HttpResponse(json.dumps({"status_code":500, "message":"Some error occured"}), content_type="application/json")
 
     data = {"user": current_user, "logs": logs}
     return HttpResponse(json.dumps({"status_code":200, "message":data}), content_type="application/json")
@@ -142,7 +147,10 @@ def monitor_experiment(req):
 @login_required(redirect_field_name=None)
 def get_allocated_mids(req):
     checkadmin(req)
-    mid_count = Account.objects.select_related().filter(board__online=1).values('board__mid', 'board_id').annotate(mcount=Count('board_id')).order_by('mcount')
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT tables_board.mid, COUNT(tables_account.id), tables_board.id FROM tables_account RIGHT OUTER JOIN tables_board ON tables_account.board_id = tables_board.id WHERE tables_board.online = 1 GROUP BY tables_board.mid ORDER BY COUNT(tables_account.id)")
+        mid_count = cursor.fetchall()
+
     return render(req, 'admin/changeMID.html', {"mid_count" : mid_count})
 
 @csrf_exempt
@@ -165,10 +173,24 @@ def toggle_device_status(req):
         return HttpResponse(json.dumps({"status_code":400, "message":"Invalid parameters"}), content_type="application/json")
 
     try:
+        now = datetime.datetime.now()
+        current_slot_id = Slot.objects.filter(start_hour=now.hour,
+                                                start_minute__lt=now.minute,
+                                                end_minute__gt=now.minute)
+
+        current_slot_id = -1 if not current_slot_id else current_slot_id[0].id
+
+        current_bookings = Booking.objects.filter(slot_id=current_slot_id,
+                                                    booking_date=datetime.date.today()).select_related()
+        current_mids = list([-1]) if not current_bookings else [current_booking.account.board.mid for current_booking in current_bookings]
+    except Exception as e:
+        return HttpResponse(json.dumps({"status_code":400, "message":"Unsuccessful"}), content_type="application/json")
+
+    if int(mid) in current_mids:
+        return HttpResponse(json.dumps({"status_code":400, "message":"Board is in use."}), content_type="application/json")
+    try:
         brd = Board.objects.get(mid = mid)
-
         brd.temp_offline = not brd.temp_offline
-
         brd.save()
 
         return HttpResponse(json.dumps({"status_code":200, "message":"Toggle successful"}), content_type="application/json")
