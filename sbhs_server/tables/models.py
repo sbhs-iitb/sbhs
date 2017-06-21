@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from undelete.models import TrashableMixin
-import random, datetime, os
+import random, datetime, os ,requests , sys
 from sbhs_server.helpers import mailer, simple_encrypt
 from django.contrib.auth.models import UserManager
 from sbhs_server import settings
@@ -238,3 +238,32 @@ class Experiment(TrashableMixin):
 
     created_at          = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at          = models.DateTimeField(auto_now=True, editable=False)
+
+
+
+class Webcam():
+    """docstring for Webcam"""
+    def __init__(self):
+        pass
+
+    @classmethod
+    def load_image(className,mid):
+        # for images on server 15, it will gstream the photos on reload
+        video_port = settings.mid_video_map.get(str(mid),-1)
+        if video_port == -1:
+            return 
+        
+        with open("tracker.txt", "a") as f:
+            f.write(str(mid) + "   " + str(video_port) + "\n")
+
+        if int(mid) :#in range(0,15):
+            command = "streamer -q -f jpeg -c /dev/video" + str(video_port)
+            command += " -o " + settings.WEBCAM_DIR + "/image" + str(mid) + ".jpeg" 
+            os.system(command)
+
+        else :
+            take_snapshot = requests.get("http://10.102.152.16:8080/webcams/%d/take_snapshot" % int(mid))
+            get_image_link = "http://10.102.152.16:8080/webcams/%d/get_image_data"  % int(mid)
+            
+            command = "curl -s %s > %s/image%d.jpeg" % (get_image_link, str(settings.WEBCAM_DIR), int(mid))
+            os.system(command)
