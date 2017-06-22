@@ -32,6 +32,8 @@ DEBUG = not is_production
 
 TEMPLATE_DEBUG = not is_production
 
+#IPs allowed to host the server
+
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",

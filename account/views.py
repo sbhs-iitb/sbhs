@@ -12,6 +12,10 @@ from datetime import datetime
 # Create your views here.
 
 def index(req):
+    """ Renders the user web interface.
+        Input: s:request object.
+        Output: HttpResponse object returned by render() function for the given interface.
+    """
     if req.user.is_authenticated():
         return redirect(home)
     return render(req, "account/index.html")
@@ -20,6 +24,16 @@ def new():
     pass
 
 def create(req):
+    """ Creates a new user account.
+        Generate user alerts if:
+            Any of the fields is not entered.
+            Entered email-id is invalid.
+            Entered username or email-id is existing.
+            Alloted board id is -1, because of no boards being available online.
+            If the user credentials cross all checks and hence a successful account is created.
+        Input: s:request object.
+        Output: HttpResponseRedirect object returned by redirect() function.
+    """
     error = []
 
     name        = req.POST.get("name").strip()
@@ -85,6 +99,13 @@ def create(req):
     #     return redirect(index)
 
 def confirm(req, token):
+    """ Confirms a user's email-id.
+        Generate user alerts if:
+            User enters invalid confirmation token.
+            User's email-id gets confirmed.
+        Input: s:request object.
+        Output: HttpResponseRedirect object returned by redirect() function.
+    """
     try:
         email = simple_encrypt.decrypt(token)
         account = Account.objects.get(email=email)
@@ -97,6 +118,13 @@ def confirm(req, token):
     return redirect(index)
 
 def login(req):
+    """ Logs in an existing user.
+        Generate user alerts if:
+            Either of username or password do not match.
+            Account email-id is not activated yet.
+        Input: s:request object.
+        Output: HttpResponseRedirect object returned by redirect() function.
+    """
     username = req.POST.get('username')
     password = req.POST.get('password')
     #user = authenticate(username=username, password=password)
@@ -107,7 +135,7 @@ def login(req):
         messages.add_message(req, messages.ERROR, "Invalid username or password.")
         return redirect(index)
         
-    is_authenticated = user.check_password(password)
+    is_authenticated = user.check_password(password)+
 
     if is_authenticated:
         if user.is_active:
@@ -121,9 +149,17 @@ def login(req):
         return redirect(index)
 
 def logout(req):
+    """ Logs out a logged-in user.
+        Input: s:request object.
+        Output: HttpResponseRedirect object returned by redirect() function.
+    """
     LOGOUT(req)
     return redirect(index)
 
 @login_required(redirect_field_name=None)
 def home(req):
+    """ Redirects to the home page.
+        Input: s:request object.
+        Output: HttpResponse object returned by render() function for the given interface.
+    """
     return render(req, "account/home.html")
