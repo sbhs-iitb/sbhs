@@ -36,7 +36,7 @@ def booking_index(req):
 @login_required(redirect_field_name=None)
 def webcam_index(req):
     checkadmin(req)
-    boards = Board.objects.all()
+    boards = Board.objects.filter(online=True)
     for board in boards:
         Webcam.load_image(board.mid)
     return render(req, 'admin/webcam_index.html', {"boards": boards})
