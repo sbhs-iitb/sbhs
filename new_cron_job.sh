@@ -8,6 +8,7 @@ find $(pwd) -iname \*.pyc -exec rm -rfv {} \; #to delete all .pyc files
 DIR="$( cd "$( dirname "$0" )" && pwd )"
 cd $DIR
 killall streamer
+rm production_static_files/img/webcam/*.jpeg
 source ../venv/bin/activate
 #source ./bin/activate
 python sbhs_server/scan_machines.py
