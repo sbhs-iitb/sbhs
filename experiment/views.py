@@ -215,7 +215,7 @@ def log_data(sbhs, mid, experiment_id, heat=None, fan=None, temp=None):
     if temp is None:
         temp = sbhs.getTemp()
 
-    data = "%f %s %s %s\n" % (time.time(), str(heat), str(fan), str(temp))
+    data = "%d %s %s %s\n" % (int(time.time()), str(heat), str(fan), str(temp))
     global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + str(mid) + ".log"
     with open(global_logfile, "a") as global_loghandler:
         global_loghandler.write(data)
