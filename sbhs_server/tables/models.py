@@ -83,7 +83,7 @@ class Account(TrashableMixin, AbstractBaseUser):
         return self.name
 
     def send_confirmation(self):
-        message = """Hi,\n\nPlease visit the link """ + settings.BASE_URL +  """sbhs/account/confirm/"""
+        message = """Hi,\n\nPlease visit the link """ + settings.BASE_URL +  """account/confirm/"""
         message = message + self.confirmation_token()
         message = message + """ to confirm your account.\n\n\nRegards,\nVlabs Team"""
         mailer.email(self.email, "Please confirm your account", message)
@@ -249,16 +249,10 @@ class Webcam():
     @classmethod
     def load_image(className,mid):
         # for images on server 15, it will gstream the photos on reload
-        video_port = settings.mid_video_map.get(str(mid),-1)
-        if video_port == -1:
-            return 
         
-        with open("tracker.txt", "a") as f:
-            f.write(str(mid) + "   " + str(video_port) + "\n")
-
         if int(mid) :#in range(0,15):
-            command = "streamer -q -f jpeg -c /dev/video" + str(video_port)
-            command += " -o " + settings.WEBCAM_DIR + "/image" + str(mid) + ".jpeg" 
+            command = "streamer -q -f jpeg -c /dev/video" + str(mid)
+            command += " -o " + settings.WEBCAM_DIR + "image" + str(mid) + ".jpeg"
             os.system(command)
 
         else :
