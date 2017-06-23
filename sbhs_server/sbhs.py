@@ -19,9 +19,10 @@ class Sbhs:
     """ This is the Single Board Heater System class """
 
     def __init__(self):
-        # status of the board
-        # 0 = not connected
-        # 1 = connected
+        """ status of the board
+            0 = not connected
+            1 = connected
+        """
         self.machine_id = 26 
         self.device_num = 26 
         self.boardcon = False
@@ -106,7 +107,10 @@ class Sbhs:
         return False
 
     def setHeat(self, val):
-        """ Set the heat """
+        """ Sets the heat, checks if value is valid i.e. within range.
+            Input: self object, val
+            Output: Error message if heat cannot be set.
+        """
         if val > MAX_HEAT or val < 0:
             print 'Error: heat value cannot be more than %d' % MAX_HEAT
             return False
@@ -122,7 +126,10 @@ class Sbhs:
             return False
 
     def setFan(self, val):
-        """ Set the fan """
+        """ Sets the fan speed, checks if value is valid i.e. within range.
+            Input: self object, val
+            Output: Error message if fan cannot be set.
+        """
         if val > MAX_FAN or val < 0:
             print 'Error: fan value cannot be more than %d' % MAX_FAN
             return False
@@ -137,7 +144,8 @@ class Sbhs:
             return False
 
     def getTemp(self):
-        """ Get the temperature """
+        """ Gets the temperature from the machine.
+        """
         try:
             self.boardcon.flushInput()
             self._write(chr(OUTGOING_TEMP))
@@ -149,7 +157,7 @@ class Sbhs:
         return  0.0
 
     def getMachineId(self):
-        """ Get machine id from the device """
+        """ Gets machine id from the device """
         try:
             self.boardcon.flushInput()
             self._write(chr(OUTGOING_MACHINE_ID))

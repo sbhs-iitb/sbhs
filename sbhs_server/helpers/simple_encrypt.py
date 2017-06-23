@@ -1,6 +1,8 @@
 import base64
 
 def encrypt(cleartext):
+    """ Function to encrypt the text which is send over the e-mail to verify the user.
+    """
     string = cleartext
 
     string = string[::-1]
@@ -17,6 +19,8 @@ def encrypt(cleartext):
 
 
 def decrypt(ciphertext):
+    """ Function to decrypt the ciphertext
+    """
     data = ciphertext.split(".")
     padding = int(data[0])
     cipher = data[1]

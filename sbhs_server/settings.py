@@ -52,7 +52,9 @@ if not DEBUG:
     ]
 
 # Application definition
-
+"""
+        Installed apps
+"""
 INSTALLED_APPS = (
     #'django.contrib.admin',
     'django.contrib.auth',

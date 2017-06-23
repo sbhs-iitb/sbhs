@@ -3,25 +3,25 @@ import sbhs
 import os
 import sys
 
-# erase the old map_machine_ids.txt file
+"""erase the old map_machine_ids.txt file"""
 try:
     file('map_machine_ids.txt', 'w').close()
 except:
     print 'Failed to create machine map file file'
     sys.exit(1)
 
-# open the map_machine_ids file for writing
+"""open the map_machine_ids file for writing"""
 try:
     map_machine_file = file('map_machine_ids.txt', 'w')
 except:
     print 'Failed to create machine map file file'
     sys.exit(1)
 
-# get list of device file names that start with ttyUSB* in the /dev folder
-#device_files = []
+""" get list of device file names that start with ttyUSB* in the /dev folder
+    device_files = []"""
 device_files = [each for each in os.listdir('/dev') if each.startswith('ttyUSB')]
 
-# if no device filename found then exit
+"""if no device filename found then exit"""
 if not device_files:
     print 'No USB device found in /dev folder'
     sys.exit(1)
