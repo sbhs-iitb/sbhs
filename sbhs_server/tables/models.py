@@ -98,7 +98,7 @@ class Account(TrashableMixin, AbstractBaseUser):
         """ Function to show message to the user to confirm their account by visiting the link sent
             to their e-mail.
         """
-        message = """Hi,\n\nPlease visit the link """ + settings.BASE_URL +  """sbhs/account/confirm/"""
+        message = """Hi,\n\nPlease visit the link """ + settings.BASE_URL +  """account/confirm/"""
         message = message + self.confirmation_token()
         message = message + """ to confirm your account.\n\n\nRegards,\nVlabs Team"""
         mailer.email(self.email, "Please confirm your account", message)
@@ -139,7 +139,6 @@ class Slot(TrashableMixin):
 
     @staticmethod
     def indices(self, other):
-        These lines are irrelevant due to booking date scheme
         """ now = datetime.datetime.now()
             cur_hour = now.hour
 

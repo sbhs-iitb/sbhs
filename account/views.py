@@ -135,7 +135,7 @@ def login(req):
         messages.add_message(req, messages.ERROR, "Invalid username or password.")
         return redirect(index)
         
-    is_authenticated = user.check_password(password)+
+    is_authenticated = user.check_password(password)
 
     if is_authenticated:
         if user.is_active:
