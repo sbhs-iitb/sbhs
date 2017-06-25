@@ -29,7 +29,9 @@ def initial_login(req):
     except Exception as e:
         return HttpResponse(json.dumps({"STATUS": 400, "MESSAGE": {"IS_IP":"1","DATA":"Invalid username"}}))
             
-    rpi_ip = settings.pi_ip_map[str(assigned_mid)]
+    rpi_ip = settings.pi_ip_map.get(str(assigned_mid))
+    if rpi_ip is None:
+        return HttpResponse(json.dumps({"STATUS": 400, "MESSAGE": {"IS_IP": "1", "DATA":"Board is currently offline"}}))
 
     return HttpResponse(json.dumps({"STATUS": 200, "MESSAGE": {"IS_IP":"1","DATA":rpi_ip}}))
 #    return HttpResponse(key)
