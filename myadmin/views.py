@@ -177,10 +177,25 @@ def toggle_device_status(req):
         return HttpResponse(json.dumps({"status_code":400, "message":"Invalid parameters"}), content_type="application/json")
 
     try:
+        now = datetime.datetime.now()
+        current_slot_id = Slot.objects.filter(start_hour=now.hour,
+                                                start_minute__lt=now.minute,
+                                                end_minute__gt=now.minute)
+
+        current_slot_id = -1 if not current_slot_id else current_slot_id[0].id
+
+        current_bookings = Booking.objects.filter(slot_id=current_slot_id,
+                                                    booking_date=datetime.date.today()).select_related()
+        current_mids = list([-1]) if not current_bookings else [current_booking.account.board.mid for current_booking in current_bookings]
+    except Exception as e:
+        return HttpResponse(json.dumps({"status_code":400, "message":"Unsuccessful"}), content_type="application/json")
+
+    if int(mid) in current_mids:
+        return HttpResponse(json.dumps({"status_code":400, "message":"Board is in use."}), content_type="application/json")
+
+    try:
         brd = Board.objects.get(mid = mid)
-
         brd.temp_offline = not brd.temp_offline
-
         brd.save()
 
         return HttpResponse(json.dumps({"status_code":200, "message":"Toggle successful"}), content_type="application/json")
