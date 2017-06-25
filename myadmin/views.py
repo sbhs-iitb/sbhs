@@ -3,10 +3,11 @@ from django.http import Http404,HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
+from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
 from sbhs_server.tables.models import Board, Booking, Slot, Experiment, Account
 from sbhs_server import settings,sbhs
-import subprocess,json,serial,os, datetime, re
+import subprocess,json,serial,os, datetime
 # Create your views here.
 
 def checkadmin(req):
@@ -127,16 +128,18 @@ def monitor_experiment(req):
         current_booking_id, current_user = current_booking.id, current_booking.account.username
 
         logfile = Experiment.objects.filter(booking_id=current_booking_id).order_by('created_at').reverse()[0].log
+    except:
+        return HttpResponse(json.dumps({"status_code":417, "message": "Experiment hasn't started"}), content_type="application/json")
 
-        # get last 20 lines from logs
-        stdin,stdout = os.popen2("tail -n 20 "+logfile)
+    try:
+        # get last 10 lines from logs
+        stdin,stdout = os.popen2("tail -n 10 "+logfile)
         stdin.close()
         logs = stdout.readlines(); stdout.close()
-        regex = re.compile(r"^\d+\.\d+ \d{1,3} \d{1,3} \d{1,3}\.?\d+$")
         screened_logs = []
         for line in logs:
-            if regex.match(line):
-                screened_logs.append(line)
+            screened_line = " ".join(line.split()[:4]) + "\n"
+            screened_logs.append(screened_line)
 
         logs = "".join(screened_logs)
     except Exception as e:
@@ -148,7 +151,10 @@ def monitor_experiment(req):
 @login_required(redirect_field_name=None)
 def get_allocated_mids(req):
     checkadmin(req)
-    mid_count = Account.objects.select_related().filter(board__online=1).values('board__mid', 'board_id').annotate(mcount=Count('board_id')).order_by('mcount')
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT tables_board.mid, COUNT(tables_account.id), tables_board.id FROM tables_account RIGHT OUTER JOIN tables_board ON tables_account.board_id = tables_board.id WHERE tables_board.online = 1 GROUP BY tables_board.mid ORDER BY COUNT(tables_account.id)")
+        mid_count = cursor.fetchall()
+
     return render(req, 'admin/changeMID.html', {"mid_count" : mid_count})
 
 @csrf_exempt
