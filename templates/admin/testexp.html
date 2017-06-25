@@ -13,6 +13,10 @@
         padding: 15px;
         display: none;
     }
+    #log-data > span {
+        word-spacing: 5em;
+        margin-left: 3em;
+    }
 </style>
 <div class="container">
     <div class="row">
@@ -71,7 +75,7 @@
     </div>
 </div>
 <script>
-    var BASE_URL = window.location.origin;
+    var BASE_URL = window.location.origin + "/sbhs";
     $("#tableId").on("click", "tr", function(e) {
         $("#tableId").find("tr.highlight").removeClass("highlight");
         $(this).addClass("highlight");
@@ -214,7 +218,7 @@
             if (data.status_code == 200) {
                 console.log(data.message.logs.replace("/\n/g", "<br/>"));
                 document.getElementById("username").innerHTML = "User : " + data.message.user;
-                document.getElementById("log-data").innerHTML = "<pre>Timestamp Heater Fan Temp</pre>" + data.message.logs.replace(new RegExp("\n","g"), "<br/>");
+                document.getElementById("log-data").innerHTML = "<pre>Iteration Heater Fan Temp</pre><span>" + data.message.logs.replace(new RegExp("\n","g"), "</span><br/><span>") + "</span>";
             }
             else {
                 alert(data.status_code);

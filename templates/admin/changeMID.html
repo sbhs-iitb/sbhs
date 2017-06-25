@@ -17,8 +17,8 @@
 
             <select id="mid">
                 {% for mid in mid_count %}
-                <option id = "{{ mid.board_id }}">
-                    {{ mid.board__mid }}-{{mid.mcount}}
+                <option id = "{{ mid.2 }}">
+                    {{ mid.0 }}-{{mid.1}}
                 </option>
                 {% endfor %}
             </select>
@@ -30,43 +30,42 @@
     <script type="text/javascript">
         
     function updateMID() {
-            $("#update-btn").prop('disabled',true);
-            var BASE_URL = window.location.origin;  
-            var username = $("#username").val();
-            var board_id = $("#mid").children(":selected").attr("id");
+        $("#update-btn").prop('disabled',true);
+        var BASE_URL = window.location.origin + "/sbhs";  
+        var username = $("#username").val();
+        var board_id = $("#mid").children(":selected").attr("id");
 
-            if(username == "")
-            {
-                alert("Username field must not be empty");
-                return;
+        if(username == "")
+        {
+            alert("Username field must not be empty");
+            return;
+        }
+
+        var request = $.ajax({
+            url:BASE_URL + "/admin/updatemid",
+            method : "POST",
+            data : {
+                "username" : username,
+                "board_id" : board_id
             }
+        });
 
-            var request = $.ajax({
-                url:BASE_URL + "/admin/updatemid",
-                method : "POST",
-                data : {
-                    "username" : username,
-                    "board_id" : board_id
-                }
-            });
-
-            request.done(function(data){
-                if(data.status_code == 200) {
-                    alert(data.message);
-                    location.reload();
-                }
-                else {
-                    alert(data.message);
-                    $("#update-btn").prop('disabled',false);
-                }                
-            });
-
-
+        request.done(function(data){
+            if(data.status_code == 200) {
+                alert(data.message);
+                $("#update-btn").prop('disabled',false);
+                location.reload();
+            }
+            else {
+                alert(data.message);
+                $("#update-btn").prop('disabled',false);
+            }                
+        });
     }
 
     // for live search of usernames
     if (sessionStorage.getItem("fetchedUsers") == null) {
-        var BASE_URL = window.location.origin;
+        var BASE_URL = window.location.origin + "/sbhs";
         var request = $.ajax({
             url: BASE_URL + '/admin/getusers',
             method: 'POST'
