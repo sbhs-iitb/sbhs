@@ -37,6 +37,10 @@ Set the variables accordingly. You will need the *DB_** variables if you're usin
 + Run the script *new_cron_job.sh*.  
 `bash new_cron_job.sh`
 
++ Add the cronjob to crontab.  
+Open crontab with `crontab -e`  
+Add the line `56 * * * * bash /path/to/your/project/root/new_cron_job.sh`
+
 + Run the server with `python manage.py runserver`. Open **localhost:8000** in your browser.
 
 ### Instructions for setting up Apache
