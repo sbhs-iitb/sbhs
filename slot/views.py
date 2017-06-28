@@ -4,8 +4,9 @@ from django.contrib import messages
 from sbhs_server.tables.models import Account, Slot, Booking
 import datetime
 
-#Defines an upper limit for the number of slots that can be booked by an user in advance.
+
 LIMIT = 2
+"""Defines an upper limit for the number of slots that can be booked by an user in advance."""
 
 @login_required(redirect_field_name=None)
 def new(req):
