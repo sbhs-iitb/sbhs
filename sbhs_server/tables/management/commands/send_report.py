@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from sbhs_server import settings, helpers
 from sbhs_server.tables.models import Board
 import os, json
+from datetime import datetime
 
 class Command(BaseCommand):
 	args = ''
@@ -53,7 +54,7 @@ class Command(BaseCommand):
 					message += "MID : {}   Cause : {}\n" .format(key,faulty_boards[key])
 		message += "\nYou can check the SBHS status on http://vlabs.iitb.ac.in/sbhs/admin/."
 		message += " Possible correction actions are:\n"
-		message += "1. Run this command without brackets -> ( cd $SBHS_SERVER_ROOT; ./cron_job.sh )\n"
+		message += "1. Run this command without brackets -> ( cd $SBHS_SERVER_ROOT; ./new_cron_job.sh )\n"
 		message += "2. If same machine comes offline multiple times, replacement of the machine is advised.\n\n\n"
 		message += "Regards,\nSBHS Vlabs Server Code"
 
@@ -61,6 +62,13 @@ class Command(BaseCommand):
 		subject = "SBHS Vlabs: Notice - SBHS not connected"
 
 		# Send email
-		if len(new_offlines) > 0 or len(faulty_boards)>0:
-			for admin in settings.SBHS_ADMINS:
-				helpers.mailer.email(admin[2], subject, message)
+                try:
+		        if len(new_offlines) > 0 or len(faulty_boards)>0:
+			        for admin in settings.SBHS_ADMINS:
+				        helpers.mailer.email(admin[2], subject, message)
+                except Exception as e:
+                        with open("mail_dump.txt", "a") as handler:
+                                delimiter = " " + "#"*10 + " "
+                                handler.write("\n" + delimiter + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + delimiter + "\n")
+                                handler.write(message)
+                                print message
