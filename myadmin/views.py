@@ -7,7 +7,7 @@ from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
 from sbhs_server.tables.models import Board, Booking, Slot, Experiment, Account
 from sbhs_server import settings,sbhs
-import subprocess,json,serial,os, datetime
+import subprocess,json,serial,os, datetime, requests
 # Create your views here.
 
 def checkadmin(req):
@@ -109,44 +109,18 @@ def monitor_experiment(req):
         mid = int(req.POST.get("mid"))
     except Exception as e:
         return HttpResponse(json.dumps({"status_code":400, "message":"Invalid parameters"}), content_type="application/json")
-
-    now = datetime.datetime.now()
-    current_slot_id = Slot.objects.filter(start_hour=now.hour,
-                                            start_minute__lt=now.minute,
-                                            end_minute__gt=now.minute)
-
-    current_slot_id = -1 if not current_slot_id else current_slot_id[0].id
-
     try:
-        current_booking = Booking.objects.get(slot_id=current_slot_id,
-                                                    booking_date=datetime.date.today(),
-                                                    account__board__mid=mid)
+        ip = settings.pi_ip_map.get(str(mid))
+        if ip is None:
+            return HttpResponse(json.dumps({"status_code":400, "message":"Board is offline"}), content_type="application/json")
+        url = "http://" + str(ip) + "/pi/admin/monitor"
+        payload = {"mid":mid}
+        r = requests.post(url , data = payload)
+        
+        return HttpResponse(r.text, content_type="application/json")
     except Exception as e:
-        return HttpResponse(json.dumps({"status_code":400, "message":"Invalid MID"}), content_type="application/json")
-
-    try:
-        current_booking_id, current_user = current_booking.id, current_booking.account.username
-
-        logfile = Experiment.objects.filter(booking_id=current_booking_id).order_by('created_at').reverse()[0].log
-    except:
-        return HttpResponse(json.dumps({"status_code":417, "message": "Experiment hasn't started"}), content_type="application/json")
-
-    try:
-        # get last 10 lines from logs
-        stdin,stdout = os.popen2("tail -n 10 "+logfile)
-        stdin.close()
-        logs = stdout.readlines(); stdout.close()
-        screened_logs = []
-        for line in logs:
-            screened_line = " ".join(line.split()[:4]) + "\n"
-            screened_logs.append(screened_line)
-
-        logs = "".join(screened_logs)
-    except Exception as e:
-        return HttpResponse(json.dumps({"status_code":500, "message":str(e)}), content_type="application/json")
-
-    data = {"user": current_user, "logs": logs}
-    return HttpResponse(json.dumps({"status_code":200, "message":data}), content_type="application/json")
+        retVal={"status_code":500,"message":"Could not fetch device logs.."}
+        return HttpResponse(json.dumps(retVal),content_type='application/json')
 
 @login_required(redirect_field_name=None)
 def get_allocated_mids(req):
@@ -238,7 +212,7 @@ def download_log(req, mid):
         f.close()
         return HttpResponse(data, content_type='text/text')
     except:
-        return HttpResponse("Requested log file doesn't exist.")
+        return HttpResponse("Requested log file doesn't exist.Please Try in the next hour after your slot ends.")
 
 
 @csrf_exempt
@@ -249,33 +223,20 @@ def reset_device(req):
                 else 
                 status_code = 500 , data={error:errorMessage}
     """ 
+    checkadmin(req)
     mid=int(req.POST.get('mid'))
-    usb_path=settings.MID_PORT_MAP.get(mid,None)
-
-    if usb_path is None:
-        retVal={"status_code":400,"message":"Invalid MID"}
-        return HttpResponse(json.dumps(retVal),content_type='application/json')
-
-    #trying to connect to device
-
-    # check if SBHS device is connected
-    if not os.path.exists(usb_path):
-        retVal={"status_code":500,"message":"Device Not connected to defined USB Port"}
-        return HttpResponse(json.dumps(retVal),content_type='application/json')
 
     try:
-        board = sbhs.Sbhs()
-        board.machine_id=mid
-        board.boardcon= serial.Serial(port=usb_path, baudrate=9600, bytesize=8, parity='N', stopbits=1, timeout=2) #orignal stopbits = 1
-        board.status = 1
-        if board.reset_board():
-            retVal={"status_code":200,"message":board.getTemp()}
-            return HttpResponse(json.dumps(retVal),content_type='application/json')
-        else:
-            retVal={"status_code":500,"message":"Could not set the parameters.Try again."}
-            return HttpResponse(json.dumps(retVal),content_type='application/json')
-    except serial.serialutil.SerialException:
-        retVal={"status_code":500,"message":"Could not connect to the device.Try again."}
+        ip = settings.pi_ip_map.get(str(mid))
+        if ip is None:
+            return HttpResponse(json.dumps({"status_code":400, "message":"Board is offline"}), content_type="application/json")
+        url = "http://" + str(ip) + "/pi/admin/resetdevice"
+        payload = {"mid":mid}
+        r = requests.post(url , data = payload)
+        
+        return HttpResponse(r.text, content_type="application/json")
+    except Exception as e:
+        retVal={"status_code":500,"message":"Could not reset the device.."}
         return HttpResponse(json.dumps(retVal),content_type='application/json')
 
 
@@ -287,35 +248,21 @@ def set_device_params(req):
                 else 
                 status_code = 500 , data={error:errorMessage}
     """ 
+    checkadmin(req)
     mid=int(req.POST.get('mid'))
     fan=int(req.POST.get('fan'))
     heat=int(req.POST.get('heat'))
-    usb_path=settings.MID_PORT_MAP.get(mid,None)
-
-    if usb_path is None:
-        retVal={"status_code":400,"message":"Invalid MID"}
-        return HttpResponse(json.dumps(retVal),content_type='application/json')
-
-    #trying to connect to device
-
-    # check if SBHS device is connected
-    if not os.path.exists(usb_path):
-        retVal={"status_code":500,"message":"Device Not connected to defined USB Port"}
-        return HttpResponse(json.dumps(retVal),content_type='application/json')
-
     try:
-        board = sbhs.Sbhs()
-        board.machine_id=mid
-        board.boardcon= serial.Serial(port=usb_path, baudrate=9600, bytesize=8, parity='N', stopbits=1, timeout=2) #orignal stopbits = 1
-        board.status = 1
-        if board.setFan(fan) and board.setHeat(heat):
-            retVal={"status_code":200,"message":board.getTemp()}
-            return HttpResponse(json.dumps(retVal),content_type='application/json')
-        else:
-            retVal={"status_code":500,"message":"Could not set the parameters.Try again."}
-            return HttpResponse(json.dumps(retVal),content_type='application/json')
-    except serial.serialutil.SerialException:
-        retVal={"status_code":500,"message":"Could not connect to the device.Try again."}
+        ip = settings.pi_ip_map.get(str(mid))
+        if ip is None:
+            return HttpResponse(json.dumps({"status_code":400, "message":"Board is offline"}), content_type="application/json")
+        url = "http://" + str(ip) + "/pi/admin/setdevice"
+        payload = {"mid":mid, "fan":fan, "heat":heat}
+        r = requests.post(url , data = payload)
+        
+        return HttpResponse(r.text, content_type="application/json")
+    except Exception as e:
+        retVal={"status_code":500,"message":"Could not set the device params.."}
         return HttpResponse(json.dumps(retVal),content_type='application/json')
 
 @csrf_exempt
@@ -326,32 +273,17 @@ def get_device_temp(req):
                 else 
                 status_code = 500 , data={error:errorMessage}
     """ 
+    checkadmin(req)
     mid=int(req.POST.get('mid'))
-    usb_path=settings.MID_PORT_MAP.get(mid,None)
-
-    if usb_path is None:
-        retVal={"status_code":400,"message":"Invalid MID"}
-        return HttpResponse(json.dumps(retVal),content_type='application/json')
-
-    #trying to connect to device
-
-    # check if SBHS device is connected
-    if not os.path.exists(usb_path):
-        retVal={"status_code":500,"message":"Device Not connected to defined USB Port"}
-        return HttpResponse(json.dumps(retVal),content_type='application/json')
-
     try:
-        board = sbhs.Sbhs()
-        board.machine_id=mid
-        board.boardcon= serial.Serial(port=usb_path, baudrate=9600, bytesize=8, parity='N', stopbits=1, timeout=2) #orignal stopbits = 1
-        board.status = 1
-        temp=board.getTemp()
-        if temp!=0.0:
-            retVal={"status_code":200,"message":temp}
-            return HttpResponse(json.dumps(retVal),content_type='application/json')
-        else:
-            retVal={"status_code":500,"message":"Could not set the parameters.Try again."}
-            return HttpResponse(json.dumps(retVal),content_type='application/json')
-    except serial.serialutil.SerialException:
-        retVal={"status_code":500,"message":"Could not connect to the device.Try again."}
+        ip = settings.pi_ip_map.get(str(mid))
+        if ip is None:
+            return HttpResponse(json.dumps({"status_code":400, "message":"Board is offline"}), content_type="application/json")
+        url = "http://" + str(ip) + "/pi/admin/gettemp"
+        payload = {"mid":mid}
+        r = requests.post(url , data = payload)
+        
+        return HttpResponse(r.text, content_type="application/json")
+    except Exception as e:
+        retVal={"status_code":500,"message":"Could not get the device temperature.."+str(e)}
         return HttpResponse(json.dumps(retVal),content_type='application/json')
