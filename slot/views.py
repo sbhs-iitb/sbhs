@@ -4,10 +4,17 @@ from django.contrib import messages
 from sbhs_server.tables.models import Account, Slot, Booking
 import datetime
 
+"""Defines an upper limit for the number of slots that can be booked by an user in advance."""
+
 LIMIT = 2
 
 @login_required(redirect_field_name=None)
 def new(req):
+    """ Shows currently available slots.
+    
+        Input: req:request object.
+        Output: HttpResponse object.
+    """
     cur_slots = Slot.current_slots(req.user.board.mid)
     all_slots = Slot.get_free_slots(req.user.board.mid)
     date = (datetime.datetime.now()).strftime("%Y-%m-%d")
@@ -15,12 +22,25 @@ def new(req):
 
 @login_required(redirect_field_name=None)
 def show(req, date_string):
+    """ Shows all available slots.
+        Input: req:request object.
+        Output: HttpResponse object.
+    """
     date = datetime.datetime.strptime(date_string, "%Y-%m-%d")
     all_slots = Slot.get_free_slots_on(date, req.user.board.mid)
     return render(req, "slot/show.html", {"all_slots": all_slots})
 
 @login_required(redirect_field_name=None)
 def create(req):
+    """ Books a new slot for the user.
+        Shows user alters if:
+            Slot is booked succesfully.
+            User exceeds the limit of number of slots that can be booked in advance for a day.
+            User attmpts to book two consecutive slots in a day in advance.
+            Requested slot is already booked by another user.
+        Input: req:request object.
+        Output: HttpResponseRedirect object.
+    """
     slot = Slot.objects.get(id=req.POST.get("slot"))
     date_string = req.POST.get("date")
     date = datetime.date.today() if date_string == "CURRENT" else datetime.datetime.strptime(date_string, "%Y-%m-%d")
@@ -54,6 +74,10 @@ def create(req):
 
 @login_required(redirect_field_name=None)
 def index(req):
+    """ Shows indices of booked slots.
+        Input: req:request object.
+        Output: HttpResponse object.
+    """
     bookings = req.user.booking_set.select_related("slot").filter(trashed_at__isnull=True).order_by("booking_date")
 
     return render(req, "slot/index.html", {"bookings": reversed(bookings),
@@ -62,6 +86,14 @@ def index(req):
 
 @login_required(redirect_field_name=None)
 def delete(req, booking_id):
+    """ Deletes a previously booked slot.
+        Shows user alerts if:
+            Booked slot is deleted succesfully.
+            Slot cannot be deleted as it doesn't exist.
+            Slot cannot be deleted as it has expired.
+        Input: req:request object, booking_id: slot booking id.
+        Output: HttpResponseRedirect object.
+    """
     try:
         booking = Booking.objects.select_related("slot").get(id=booking_id)
         assert booking.account_id == req.user.id

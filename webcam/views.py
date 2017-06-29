@@ -9,12 +9,21 @@ from sbhs_server.tables.models import Board, Webcam
 # 
 
 def reload(req, mid):
-
+	""" Refreshes the image of the SBHS
+    
+        Input: req:request object, mid: machine-id of the concerned SBHS.
+        Output: HttpResponse object.
+    """
 	Webcam.load_image(mid)
 	return HttpResponse("")
 
 @login_required(redirect_field_name=None)
 def show_video(req):
+	""" Shows the video of the SBHS.
+    
+        Input: req:request object.
+        Output: HttpResponse object.
+    """
 	board = req.user.board
 
 	image_link = board.image_link()
@@ -25,6 +34,11 @@ def show_video(req):
 
 @login_required(redirect_field_name=None)
 def show_video_to_admin(req, mid):
+	""" Shows the video of the SBHS to the admin.
+    
+        Input: req:request object.
+        Output: HttpResponse object.
+    """
 	checkadmin(req)
 	board = Board.objects.get(mid=int(mid))
 	image_link = board.image_link()

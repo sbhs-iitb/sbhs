@@ -10,18 +10,30 @@ from sbhs_server import settings
 # Create your views here.
 # 
 def check_connection(req):
+    """ Checks if the connection exists or not.
+        Input: req:request object.
+        Output: HttpResponse object.
+    """
     return HttpResponse("TESTOK")
 
 
 
 @csrf_exempt
 def initial_login(req):
+    """ Initiates the lohin process.
+        Input: req:request object.
+        Output: HttpResponse object.
+    """
     rpi_ip = ''
     return HttpResponse(json.dumps({"STATUS": 200, "MESSAGE": {"IS_IP":"0","DATA":rpi_ip}}))
 
 
 @csrf_exempt
 def initiation(req):
+    """ Logs in an user for conducting the experiment on the specified board.
+        Input: req:request object.
+        Output: HttpResponse object.
+    """
     username = req.POST.get("username")
     password = req.POST.get("password")
     user = authenticate(username=username, password=password)
@@ -99,6 +111,13 @@ def initiation(req):
 # @login_required(redirect_field_name=None)
 @csrf_exempt
 def experiment(req):
+    """ Manages an ongoing experiment.
+        Alert the user when:
+            The slot has ended.
+            The slot wasn't booked.
+        Input: req:request object.
+        Output: HttpResponse object.
+    """
     try:
         server_start_ts = int(time.time() * 1000)
         from sbhs_server.settings import boards
@@ -158,6 +177,10 @@ def experiment(req):
 
 @csrf_exempt
 def reset(req):
+    """ Resets an experiment.
+        Input: req:request object.
+        Output: HttpResponse object.
+    """
     try:
         from sbhs_server.settings import boards
         user = req.user
@@ -182,10 +205,17 @@ def reset(req):
     return HttpResponse("")
 
 def client_version(req):
+    """ Input: req:request object.
+        Output: HttpResponse object.
+    """
     return HttpResponse("3")
 
 @login_required(redirect_field_name=None)
 def logs(req):
+    """ Renders experimental log files to the user interface.
+        Input: req:request object.
+        Output: HttpResponse object.
+    """
     bookings         = Booking.objects.only("id").filter(account__id=req.user.id)
     deleted_bookings = Booking.trash.only("id").filter(account__id=req.user.id)
     bookings = list(bookings) + list(deleted_bookings)
@@ -197,6 +227,10 @@ def logs(req):
 
 @login_required(redirect_field_name=None)
 def download_log(req, experiment_id, fn):
+    """ Downloads the experimental log file.
+        Input: req: request object, experiment_id: experimental id, fn: filename.
+        Output: HttpResponse object
+    """
     try:
         experiment_data = Experiment.objects.select_related("booking", "booking__account").get(id=experiment_id)
         assert req.user.id == experiment_data.booking.account.id
@@ -208,6 +242,9 @@ def download_log(req, experiment_id, fn):
         return HttpResponse("Requested log file doesn't exist.")
 
 def log_data(sbhs, mid, experiment_id, heat=None, fan=None, temp=None):
+    """ Update the experimental log file.
+        Input: sbhs:board object, mid: machine-id of the SBHS, experiment_id: experimental id, heat: heater value, fan: fan value, temp: temperature.
+    """
     if heat is None:
         heat = sbhs.getHeat()
     if fan is None:
@@ -221,6 +258,10 @@ def log_data(sbhs, mid, experiment_id, heat=None, fan=None, temp=None):
         global_loghandler.write(data)
 
 def validate_log_file(req):
+    """ Validates the experimental log file.
+        Input: req: request object.
+        Output: HttpResponse object.
+    """
     import hashlib
     data = req.POST.get("data")
     data = data.strip().split("\n")

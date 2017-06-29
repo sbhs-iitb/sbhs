@@ -34,6 +34,9 @@ DEBUG = not is_production
 
 TEMPLATE_DEBUG = not is_production
 
+#IPs allowed to host the server
+
+
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
@@ -273,8 +276,4 @@ online_mids = [int(i) for i in boards.keys()]
 print "No of machines online : ", len(online_mids)
 
 import sys
-print >>sys.stderr, online_mids[:] #srikant
-#srikant
-#f = open(os.path.join(BASE_DIR, 'maintenance/online_mids.txt'), 'w')
-#f.write(online_mids)
-#f.close()
+print >>sys.stderr, online_mids[:] 

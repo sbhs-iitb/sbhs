@@ -2,7 +2,11 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.http import HttpResponseNotFound, HttpResponseServerError
 
-# Create your views here.
+"""
+    Renders the required html page
+    Input: s: request object
+    output: Redirect object returned by render() and Httpresponse() functions.    
+"""
 
 def index(req):
     return render(req, "pages/index.html")

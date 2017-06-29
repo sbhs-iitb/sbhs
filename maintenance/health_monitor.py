@@ -8,12 +8,19 @@ MIN_TEMP = 10
 MAX_TEMP = 70
 
 def write_to_port(s, com, arg):
+    """ Sets fan/heater value based on input command code and entered parameter.
+        Inputs: s:serial port object, com: number that distinguishes commands, arg: value to be set for that parameter.
+    """
     s.write(chr(int(com)))
     sleep(0.5)
     s.write(chr(int(arg)))
     sleep(0.5)
 
 def read_from_port(s, com):
+    """ Reads mid/temperature based on input command code.
+        Inputs: s:serial port object, com: number that distinguishes commands.
+        Output: result: temperature if com=255, mid if com=252, and -1 in case of invalid command code.
+    """
     s.write(chr(int(com)))
     sleep(0.5)
     if com == 255:
@@ -26,6 +33,10 @@ def read_from_port(s, com):
     return result
 
 def create_message(check_mids, defective_ports):
+    """ Creates message to be sent to the admin for monitoring ports and devices.
+        Inputs: check_mids: list of mids for devices to be checked, defective_ports: list of defective ports.
+        Output: msg: message with list of mids of devices to be checked and defective ports that is to be mailed to the admin.
+    """
     msg = ''
     if len(check_mids) != 0:
         msg += 'Please check the following machine ids :\n'
@@ -38,6 +49,18 @@ def create_message(check_mids, defective_ports):
     return msg
 
 def main():
+    """ Attempts to open serial port object on existing USB paths, and then read the mid of the device using read_from port() function.
+        Sets fan and heater value to 100 and 0 respectively using write_to_port() function,
+        and reads the temperature of the same device using read_from port() function.
+        if the serial port opens but the mid returned is less than zero
+            append it to the list of defective ports.
+        if an exception occurs while reading or writing but the port opens successfully and returns a valid mid
+            then add it to the list of offline mids.
+        if the ports opens successfully, returns a valid mid and temperature, and encounters no exceptions
+            then add it to the list of present_online_mids
+        The difference between the sets of online_mids and present_online_mids gives the list of mids of devices to be checked.
+        Calls the create_message function and mails the returned message to the admin.
+    """
     present_online_mids, offline_mids, defective_ports = [], [], []
     for i in range(0,MAX_PORTS):
         path = '/dev/ttyUSB' + str(i)

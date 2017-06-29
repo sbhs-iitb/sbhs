@@ -11,6 +11,12 @@ import subprocess,json,serial,os, datetime, re
 # Create your views here.
 
 def checkadmin(req):
+     """ Checks for valid admin
+            Raises Http error if:
+                Requested user is not admin.
+        Input: s: request object.
+        Output: HttpResponse      
+    """
     if not req.user.is_admin:
         raise Http404
 

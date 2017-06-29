@@ -2,6 +2,8 @@ from sbhs_server import settings
 import smtplib
 
 def email(to, subject, message):
+    """ Utility function to send the e-mail using SMTP.
+    """
     smtpserver = smtplib.SMTP()
     smtpserver.connect(settings.EMAIL_HOST, settings.EMAIL_PORT)
     smtpserver.ehlo()

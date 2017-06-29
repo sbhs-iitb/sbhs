@@ -10,6 +10,13 @@ from django.core.exceptions import ObjectDoesNotExist
 # Create your models here.
 
 class Board(TrashableMixin):
+    """ Declaring varibales
+        mid = Integer and unique
+        online = Boolean, Default - True
+        temp_offline = Boolean, default - False
+        created_at = DateTime
+        updated_at = DateTime
+    """
 
     mid                 = models.IntegerField(unique=True)
     online              = models.BooleanField(default=True)
@@ -24,6 +31,8 @@ class Board(TrashableMixin):
 
     @staticmethod
     def toggle_random_allotment():
+        """ Enables to toggle allotment of machines between Workshop mode and Random mode
+        """
         if Board.can_do_random_allotment():
             f = open(os.path.join(settings.BASE_DIR, "WORKSHOP_MODE"), "w")
             f.close()
@@ -32,6 +41,8 @@ class Board(TrashableMixin):
 
     @staticmethod
     def allot_board():
+        """ Function to allocate board to an user
+        """
         if Board.can_do_random_allotment():
             online_boards_count = len(settings.online_mids)
             board_num = random.randrange(online_boards_count)
@@ -55,6 +66,8 @@ class Board(TrashableMixin):
                 return -1    
 
     def image_link(self):
+        """ Function to show the image obtained from webcam
+        """
         return settings.WEBCAM_STATIC_DIR + "image" + str(self.mid) + ".jpeg"
 
 
@@ -83,12 +96,17 @@ class Account(TrashableMixin, AbstractBaseUser):
         return self.name
 
     def send_confirmation(self):
+        """ Function to show message to the user to confirm their account by visiting the link sent
+            to their e-mail.
+        """
         message = """Hi,\n\nPlease visit the link """ + settings.BASE_URL +  """account/confirm/"""
         message = message + self.confirmation_token()
         message = message + """ to confirm your account.\n\n\nRegards,\nVlabs Team"""
         mailer.email(self.email, "Please confirm your account", message)
 
     def send_password_link(self, token):
+        """ Function to show message to user to visit the link in order to change the password.
+        """
         message = """Hi,\n\nPlease visit the link """ + settings.BASE_URL +  """password/edit/"""
         message = message + token
         message = message + """ to change your password.\n\n\nRegards,\nVlabs Team"""
@@ -122,15 +140,14 @@ class Slot(TrashableMixin):
 
     @staticmethod
     def indices(self, other):
-        # These lines are irrelevant due to booking date scheme
-        #
-        # now = datetime.datetime.now()
-        # cur_hour = now.hour
-
-        # s = abs(cur_hour - self.start_hour)
-        # s = s + 100 if self.start_hour < cur_hour else s
-        # o = abs(cur_hour - other.start_hour)
-        # o = o + 100 if other.start_hour < cur_hour else o
+        """ Define indices
+            now = datetime.datetime.now()
+            cur_hour = now.hour
+            s = abs(cur_hour - self.start_hour)
+            s = s + 100 if self.start_hour < cur_hour else s
+            o = abs(cur_hour - other.start_hour)
+            o = o + 100 if other.start_hour < cur_hour else o
+        """
         return self.start_hour, other.start_hour
 
     def __lt__(self, other):
@@ -159,6 +176,10 @@ class Slot(TrashableMixin):
 
     @staticmethod
     def current_slots(mid):
+        """ Function to display the current slots to the user.
+            Input: mid
+            Output: slots
+        """
         now = datetime.datetime.now()
         slots = list(Slot.objects.filter(start_hour=now.hour, end_minute__gt=now.minute))
         bookings = Booking.objects.filter(booking_date__year=now.year,
