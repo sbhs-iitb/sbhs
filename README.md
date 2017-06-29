@@ -1,4 +1,6 @@
 # SBHS Server
+![SBHS logo](https://github.com/coderick14/sbhs/blob/deep/logo.png)  
+
 [SBHS Virtual Labs Website](http://vlabs.iitb.ac.in/sbhs/)
  
  This [branch](https://github.com/coderick14/sbhs/tree/deep) contains the server code for the load sharing architecture. It consists of a master server, connected to several Raspberry Pis, each of which is connected to four SBHS devices.  
