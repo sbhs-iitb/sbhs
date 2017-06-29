@@ -10,7 +10,6 @@ urlpatterns = [
     url(r'^experiment/check_connection/?$', views.check_connection, name='experiment_check_connection'),
     url(r'^experiment/client_version/?$', views.client_version, name='experiment_client_version'),
     url(r'^experiment/initiallogin/?$', views.initial_login, name='experiment_initial'),
-    url(r'^experiment/experiment/?$', views.experiment, name='experiment_experiment'),
     url(r'^experiment/reset/?$', views.reset, name='experiment_reset'),
     url(r'^experiment/logs/?$', views.logs, name='experiment_logs'),
     url(r'^experiment/logs/([0-9]+)/(.+)?$', views.download_log, name='experiment_logs'),
