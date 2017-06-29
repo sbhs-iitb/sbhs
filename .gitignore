@@ -8,3 +8,5 @@ sbhs.sqlite3
 sbhs_server/tables/migrations
 sbhs_server/RPi_data
 sbhs_server/pi-ip.json
+docs/
+mail_dump.txt
