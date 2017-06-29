@@ -34,72 +34,6 @@ def initial_login(req):
         return HttpResponse(json.dumps({"STATUS": 400, "MESSAGE": {"IS_IP": "1", "DATA":"Board is currently offline"}}))
 
     return HttpResponse(json.dumps({"STATUS": 200, "MESSAGE": {"IS_IP":"1","DATA":rpi_ip}}))
-#    return HttpResponse(key)
-# @login_required(redirect_field_name=None)
-@csrf_exempt
-def experiment(req):
-    """ Manages an ongoing experiment.
-        Alert the user when:
-            The slot has ended.
-            The slot wasn't booked.
-        Input: req:request object.
-        Output: HttpResponse object.
-    """
-    try:
-        server_start_ts = int(time.time() * 1000)
-        from sbhs_server.settings import boards
-        user = req.user
-        key = str(user.board.mid)
-        experiment = Experiment.objects.select_related().filter(id=boards[key]["experiment_id"])
-
-        if len(experiment) == 1 and user.id == experiment[0].booking.account.id and experiment[0].booking.trashed_at == None:
-            experiment = experiment[0]
-            now = datetime.datetime.now()
-            endtime = experiment.booking.end_time()
-            if endtime > now:
-                timeleft = int((endtime-now).seconds)
-                heat = max(min(int(req.POST.get("heat")), 100), 0)
-                fan = max(min(int(req.POST.get("fan")), 100), 0)
-
-                boards[key]["board"].setHeat(heat)
-                boards[key]["board"].setFan(fan)
-                temperature = boards[key]["board"].getTemp()
-                log_data(boards[key]["board"], key, experiment.id, heat=heat, fan=fan, temp=temperature)
-
-                server_end_ts = int(time.time() * 1000)
-
-                STATUS = 1
-                MESSAGE = "%s %d %d %2.2f" % (req.POST.get("iteration"),
-                                            heat,
-                                            fan,
-                                            temperature)
-                MESSAGE = "%s %s %d %d,%s,%d" % (MESSAGE,
-                                            req.POST.get("timestamp"),
-                                            server_start_ts,
-                                            server_end_ts,
-                                            req.POST.get("variables"), timeleft)
-
-                f = open(experiment.log, "a")
-                f.write(" ".join(MESSAGE.split(",")[:2]) + "\n")
-                f.close()
-            else:
-                # boards[key]["board"].setHeat(0)
-                # boards[key]["board"].setFan(100)
-                # log_data(boards[key]["board"], key)
-                reset(req)
-                
-                STATUS = 0
-                MESSAGE = "Slot has ended. Please book the next slot to continue the experiment."
-
-                reset(req)
-                boards[key]["experiment_id"] = None
-        else:
-            STATUS = 0
-            MESSAGE = "You haven't booked this slot."
-
-        return HttpResponse(json.dumps({"STATUS": STATUS, "MESSAGE": MESSAGE}))
-    except Exception:
-        return HttpResponse(json.dumps({"STATUS": 0, "MESSAGE": "Invalid input. Perhaps the slot has ended. Please book the next slot to continue the experiment."}))
 
 @csrf_exempt
 def reset(req):
@@ -161,7 +95,7 @@ def download_log(req, experiment_id, fn):
     try:
         experiment_data = Experiment.objects.select_related("booking", "booking__account").get(id=experiment_id)
         assert req.user.id == experiment_data.booking.account.id
-        f = open(experiment_data.log, "r")
+        f = open(os.path.join(settings.EXPERIMENT_LOGS_DIR, experiment_data.log), "r")
         data = f.read()
         f.close()
         return HttpResponse(data, content_type='text/text')
