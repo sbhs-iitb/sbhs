@@ -8,13 +8,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 import sys #srikant
-import socket
+import socket,json
 import sbhs_server.credentials as credentials
 
 
 
 hostname = socket.gethostname()
-is_production = hostname == "vlabs-Veriton-Series"
+#is_production = hostname == "vlabs-Veriton-Series"
+is_production = hostname == "ttt-10"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -29,6 +30,7 @@ SECRET_KEY = credentials.PROJECT_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = not is_production
+#DEBUG = True
 
 TEMPLATE_DEBUG = not is_production
 
@@ -39,7 +41,7 @@ ALLOWED_HOSTS = [
     "192.168.43.144",
 ]
 
-if not DEBUG:
+if is_production:
     ALLOWED_HOSTS = [
         "localhost",
         "127.0.0.1",
@@ -133,8 +135,8 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CSRF_COOKIE_NAME = "pfesgbxra"
 SESSION_COOKIE_NAME = "frffvbaVq"
 
-EMAIL_HOST = 'smtp.gmail.com' #'smtp-auth.iitb.ac.in'
-EMAIL_PORT = 587 #25
+EMAIL_HOST = 'smtp-auth.iitb.ac.in'
+EMAIL_PORT = 25
 EMAIL_HOST_USER = credentials.EMAIL_HOST_USER
 EMAIL_HOST_PASSWORD = credentials.EMAIL_HOST_PASSWORD
 ADMIN_EMAIL=credentials.ADMIN_EMAIL
@@ -236,7 +238,7 @@ EXPERIMENT_LOGS_DIR = os.path.join(BASE_DIR, 'experiments')
 WEBCAM_DIR = os.path.join(STATIC_ROOT, 'img/webcam/') if is_production else os.path.join(BASE_DIR, 'static/img/webcam/')
 WEBCAM_STATIC_DIR = 'img/webcam/'
 
-if not is_production:
+if is_production:
     SBHS_ADMINS = (
         # ("Amol Mandhane", "+91-9999999999", "amol_mandhane@iitb.ac.in"),
         # ("Amol Mandhane", "+91-9999999999", "amol_mandhane@iitb.ac.in"),
