@@ -221,7 +221,7 @@
                 document.getElementById("log-data").innerHTML = "<pre>Iteration Heater Fan Temp</pre><span>" + data.message.logs.replace(new RegExp("\n","g"), "</span><br/><span>") + "</span>";
             }
             else {
-                alert(data.status_code);
+                alert(data.message);
             }
             $(".btn").prop('disabled',false);
 
