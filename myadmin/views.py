@@ -46,6 +46,12 @@ def webcam_index(req):
     return render(req, 'admin/webcam_index.html', {"boards": boards})
 
 @login_required(redirect_field_name=None)
+def logs_index(req):
+    checkadmin(req)
+    date = (datetime.datetime.now()).strftime("%Y-%m-%d")
+    return render(req, 'admin/user_logs.html', {"nowdate" : date})
+
+@login_required(redirect_field_name=None)
 def profile(req, mid):
     checkadmin(req)
     try:
@@ -174,7 +180,7 @@ def toggle_device_status(req):
 
         return HttpResponse(json.dumps({"status_code":200, "message":"Toggle successful"}), content_type="application/json")
     except Exception as e:
-        return HttpResponse(json.dumps({"status_code":400, "message":"Unsuccessful"}), content_type="application/json")
+        return HttpResponse(json.dumps({"status_code":500, "message":"Unsuccessful"}), content_type="application/json")
 
 
 def user_exists(username):
@@ -214,6 +220,43 @@ def download_log(req, mid):
     except:
         return HttpResponse("Requested log file doesn't exist.Please Try in the next hour after your slot ends.")
 
+@login_required(redirect_field_name=None)
+@csrf_exempt
+def range_logs(req):
+    checkadmin(req)
+    try:
+        start_date = req.POST.get("start_date")
+        end_date = req.POST.get("end_date")
+        start_time = req.POST.get("start_time")
+        end_time = req.POST.get("end_time")
+    except:
+        return HttpResponse(json.dumps({"status_code":400, "message":"Invalid parameters"}), content_type="application/json")
+
+    try:
+        start = start_date + " " + start_time
+        end = end_date + " " + end_time
+        log_files = Experiment.objects.filter(created_at__range=[start, end]).values("id", "log")
+
+        return HttpResponse(json.dumps({"status_code":200, "message":list(log_files)}), content_type="application/json")
+    except Exception as e:
+        return HttpResponse(json.dumps({"status_code": 500, "message": "Some error occured" + str(e)}), content_type="application/json")
+
+@login_required(redirect_field_name=None)
+@csrf_exempt
+def download_experiment_log(req, experiment_id):
+    """ Downloads the experimental log file.
+        Input: req: request object, experiment_id: experimental id
+        Output: HttpResponse object
+    """
+    checkadmin(req)
+    try:
+        experiment_data = Experiment.objects.select_related("booking", "booking__account").get(id=experiment_id)
+        f = open(os.path.join(settings.EXPERIMENT_LOGS_DIR, experiment_data.log), "r")
+        data = f.read()
+        f.close()
+        return HttpResponse(data, content_type='text/text')
+    except:
+        return HttpResponse("Requested log file doesn't exist.")
 
 @csrf_exempt
 def reset_device(req):
