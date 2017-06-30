@@ -1,0 +1,168 @@
+{% extends "layout.html" %}
+{% load staticfiles %}
+
+{% block headerfiles %}
+<script src="{% static "js/bootstrap-datepicker.js" %}"></script>
+<link rel="stylesheet" href="{% static "css/datepicker.css" %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% include "account/sub_nav.html" %}
+        <div class="span12">
+        {% include "admin/sub_nav.html" %}
+            
+            <h4>Filter log files</h4>
+            <div id="mywrapper">
+                <label for="start-date">Start date</label>
+                <div class="input-append date" id="dp1" data-date="{{ nowdate }}" data-date-format="yyyy-mm-dd">
+                    <input id="start-date" class="span2" size="16" type="text" value="{{ nowdate }}" readonly>
+                    <span class="add-on"><i class="icon-calendar"></i></span>
+                </div>
+
+                <label for="end-date">End date</label>
+                <div class="input-append date" id="dp2" data-date="{{ nowdate }}" data-date-format="yyyy-mm-dd">
+                    <input id="end-date" class="span2" size="16" type="text" value="{{ nowdate }}" readonly>
+                    <span class="add-on"><i class="icon-calendar"></i></span>
+                </div>
+
+                <label for="start-time">Start time</label>
+                <select id="start-time">
+                    <option>00:00:00</option>
+                    <option>01:00:00</option>
+                    <option>02:00:00</option>
+                    <option>03:00:00</option>
+                    <option>04:00:00</option>
+                    <option>05:00:00</option>
+                    <option>06:00:00</option>
+                    <option>07:00:00</option>
+                    <option>08:00:00</option>
+                    <option>09:00:00</option>
+                    <option>10:00:00</option>
+                    <option>11:00:00</option>
+                    <option>12:00:00</option>
+                    <option>13:00:00</option>
+                    <option>14:00:00</option>
+                    <option>15:00:00</option>
+                    <option>16:00:00</option>
+                    <option>17:00:00</option>
+                    <option>18:00:00</option>
+                    <option>19:00:00</option>
+                    <option>20:00:00</option>
+                    <option>21:00:00</option>
+                    <option>22:00:00</option>
+                    <option>23:00:00</option>
+                </select>
+
+                <label for="end-time">End time</label>
+                <select id="end-time">
+                    <option>00:00:00</option>
+                    <option>01:00:00</option>
+                    <option>02:00:00</option>
+                    <option>03:00:00</option>
+                    <option>04:00:00</option>
+                    <option>05:00:00</option>
+                    <option>06:00:00</option>
+                    <option>07:00:00</option>
+                    <option>08:00:00</option>
+                    <option>09:00:00</option>
+                    <option>10:00:00</option>
+                    <option>11:00:00</option>
+                    <option>12:00:00</option>
+                    <option>13:00:00</option>
+                    <option>14:00:00</option>
+                    <option>15:00:00</option>
+                    <option>16:00:00</option>
+                    <option>17:00:00</option>
+                    <option>18:00:00</option>
+                    <option>19:00:00</option>
+                    <option>20:00:00</option>
+                    <option>21:00:00</option>
+                    <option>22:00:00</option>
+                    <option>23:00:00</option>
+                </select>
+                
+                <br>
+                <button type="button" class="btn btn-primary" onclick="fetchFileNames()">Submit</button>
+            </div>
+        </div>
+    </div>
+
+   <h4 id="file-count"></h4>
+   <table id="logs-table" class="table table-condensed">
+        <thead>
+            <tr>
+                <th>Sl No</th>
+                <th>User</th>
+                <th>Filename</th>
+            </tr>
+        </thead>
+        <tbody>
+           
+        </tbody>
+    </table>  
+</div>
+<script type="text/javascript">
+var startDate = "{{ nowdate }}";
+var endDate = "{{ nowdate }}";
+
+(function(){
+    $("#start-date").val("{{ nowdate }}");
+    $("#end-date").val("{{ nowdate }}");
+
+    var nowTemp = new Date();
+    var now = new Date(nowTemp.getFullYear(), nowTemp.getMonth(), nowTemp.getDate(), 0, 0, 0, 0);
+     
+    var DP1 = $('#dp1').datepicker({
+        onRender: function(date) {
+            return date.valueOf() > now.valueOf() ? 'disabled' : '';
+        }
+    }).on('changeDate', function(ev) {
+        var newDate = new Date(ev.date);
+        startDate = newDate.getFullYear() + "-" + (newDate.getMonth() + 1) + "-" + newDate.getDate();
+    }).data('datepicker');
+
+    var DP2 = $('#dp2').datepicker({
+        onRender: function(date) {
+            return date.valueOf() > now.valueOf() ? 'disabled' : '';
+        }
+    }).on('changeDate', function(ev) {
+        var newDate = new Date(ev.date);
+        endDate = newDate.getFullYear() + "-" + (newDate.getMonth() + 1) + "-" + newDate.getDate();
+    }).data('datepicker');
+})();
+
+function fetchFileNames() {
+    var startTime = $("#start-time").val();
+    var endTime = $("#end-time").val();
+    var BASE_URl = window.location.origin + "/sbhs";
+    var request = $.ajax({
+        url : BASE_URl + "/admin/rangelogs",
+        method : "POST",
+        data : {
+            "start_date" : startDate,
+            "end_date" : endDate,
+            "start_time" : startTime,
+            "end_time" : endTime
+        }
+    });
+
+    request.done(function(data){
+        if (data.status_code == 200) {
+            htmlContent = "";
+            ctr=1;
+            for (item of data.message) {
+                htmlContent += "<tr>" + "<td>" + ctr + "</td>" + "<td>" + item.log.split("/").slice(-2)[0] +"</td>" + "<td><a href='" + BASE_URl + "/admin/explogs/" + item.id + "'>" + item.log.split("/").slice(-1)[0] +"</a></td>" + "</tr>";
+                ctr+=1;
+            }
+            $("#file-count").html(data.message.length + " results found");
+            $("#logs-table tbody").html(htmlContent);
+        }
+        else {
+            alert(data.message);
+        }
+    });
+}
+</script>
+{% endblock %}

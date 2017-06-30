@@ -17,6 +17,9 @@ urlpatterns = [
     url(r'^admin/changemid/?$', views.get_allocated_mids, name='admin_getmids'),
     url(r'^admin/getusers/?$', views.get_users, name='admin_users'),
     url(r'^admin/toggledevice', views.toggle_device_status, name='toggle_status'),
+    url(r'^admin/viewlogs/?$', views.logs_index, name='admin_viewlogs'),
+    url(r'^admin/rangelogs/?$', views.range_logs, name='admin_range_logs'),
+    url(r'^admin/explogs/([0-9]+)/?$', views.download_experiment_log, name='admin_explogs'),
     
     url(r'^admin/toggle_allotment_mode/?$', views.toggle_allotment_mode, name='admin_toggle_allotment_mode'),
 ]
