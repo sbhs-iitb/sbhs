@@ -36,7 +36,7 @@
                 </thead>
                 <tbody>
                     {% for b in boards %}
-                    <tr>
+                    <tr style="cursor : pointer;" title="Test/Monitor board">
                         <td>{{ b.mid }}</td>
                         <td><span class="label label-{% if b.online %}success{% else %}important{% endif %}">{% if b.online %}Online{% else %}Offline{% endif %}</span></td>
                         <td><span class="label label-{% if b.mid in mids %}important{% else %}success{% endif %}">{% if b.mid in mids %}Ongoing{% else %}Vacant{% endif %}</span></td>
@@ -45,33 +45,52 @@
                 </tbody>
             </table>
         </div>
-        <div id="test-device" class="span5">    
-            <div>
-                <input type="text" id="temp" disabled="true"><br/>
-                <button class="btn btn-primary" onclick="getTemp()">Get Temperature</button>
-            </div>
-            <br><br>
 
-            <div>
-                Heater Input: <input type="number" size="3" min="0" max="250" id="heater_val"><br/>
-                Fan Input:<input type="number" size="3" min="0" max="250" id="fan_val" style="margin-left: 20px"><br/>
-                <button class="btn btn-primary" onclick="setParams()">Set Parameters</button>
+        <!-- Modal code starts here -->
+        
+        <div class="modal hide fade" id="test-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <h3>Test board</h3>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <input type="text" id="temp" disabled="true"><br/>
+                    <button class="btn btn-primary" onclick="getTemp()">Get Temperature</button>
+                </div>
                 <br><br>
+
+                <div>
+                    Heater Input: <input type="number" size="3" min="0" max="250" id="heater-val"><br/>
+                    Fan Input:<input type="number" size="3" min="0" max="250" id="fan-val" style="margin-left: 20px"><br/>
+                    <button class="btn btn-primary" onclick="setParams()">Set Parameters</button>
+                    <br><br>
+                </div>
+                <br><br>
+
+                <div>
+                    <button class="btn btn-primary" onclick="resetParams()">Reset Parameters</button>
+                </div>           
             </div>
-            <br><br>
-
-            <div>
-                <button class="btn btn-primary" onclick="resetParams()">Reset Parameters</button>
-            </div>           
-
+            <div class="modal-footer">
+                <a data-dismiss="modal" aria-hidden="true" class="btn">Close</a>
+            </div>
         </div>
 
-        <div class="span5" id="monitor-logs">
-            <strong><p id="username"></p></strong>
-            <p id="log-data" style="word-spacing: 3em"></p>
-            <button class="btn btn-primary" onclick="getLogs()">Refresh Logs</button>
+        <div class="modal hide fade" id="monitor-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-header">
+                <h3>Monitor experiment</h3>
+            </div>
+            <div class="modal-body">
+                <strong><p id="username"></p></strong>
+                <p id="log-data" style="word-spacing: 4em"></p>
+                <button class="btn btn-primary" onclick="getLogs()">Refresh Logs</button>
+            </div>
+            <div class="modal-footer">
+                <a data-dismiss="modal" aria-hidden="true" class="btn">Close</a>
+            </div>
         </div>
-
+        <!-- Modal code ends here -->
+        
     </div>
 </div>
 <script>
@@ -84,12 +103,14 @@
         isSelectedMachineVacant = columns[columns.length-1].childNodes[0].className.indexOf("label-success") > -1
         
         if (isSelectedMachineVacant) {
-            $("#test-device").show();
-            $("#monitor-logs").hide();
+            $("#temp").val("");
+            $("#fan-val").val("");
+            $("#heater-val").val("");
+            $("#test-modal").modal();
         }
         else {
-            $("#monitor-logs").show();
-            $("#test-device").hide();
+            $("#monitor-modal").modal();
+            getLogs();
         }
     });
     
@@ -114,8 +135,8 @@
         request.done(function(data){
             if (data.status_code == 200) {
                 document.getElementById("temp").value = data.message;
-                document.getElementById("fan_val").value = 100;
-                document.getElementById("heater_val").value = 0;
+                document.getElementById("fan-val").value = 100;
+                document.getElementById("heater-val").value = 0;
             }
             else {
                 alert(data.message);
@@ -133,10 +154,10 @@
             return;
         }
         var selected_mid = selected_machine[0].getElementsByTagName('td')[0].innerHTML;
-        var fan_value = document.getElementById("fan_val").value;
-        var heater_value = document.getElementById("heater_val").value;
+        var fanValue = document.getElementById("fan-val").value;
+        var heaterValue = document.getElementById("heater-val").value;
 
-        var isInputOK = !isNaN(fan_value) && fan_value != "" && fan_value >=0 && fan_value <= MAX_VALUE && !isNaN(heater_value) && heater_value != "" && heater_value >=0 && heater_value <= MAX_VALUE;
+        var isInputOK = !isNaN(fanValue) && fanValue != "" && fanValue >=0 && fanValue <= MAX_VALUE && !isNaN(heaterValue) && heaterValue != "" && heaterValue >=0 && heaterValue <= MAX_VALUE;
         if (!isInputOK) {
             alert("Please enter a value between 0 and " + MAX_VALUE);
             return;
@@ -148,8 +169,8 @@
             method : 'POST',
             data : {
                 'mid' : selected_mid,
-                'fan' : fan_value,
-                'heat' : heater_value
+                'fan' : fanValue,
+                'heat' : heaterValue
             }
         });
 
