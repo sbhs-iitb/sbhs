@@ -143,7 +143,7 @@ def get_allocated_mids(req):
 def get_users(req):
     checkadmin(req)
     try:
-        users = list(Account.objects.values_list("username", flat=True))
+        users = list(Account.objects.select_related().values_list("username", "board__mid"))
         return HttpResponse(json.dumps({"status_code":200, "message":users}), content_type="application/json")
     except Exception as e:
         return HttpResponse(json.dumps({"status_code":500, "message":str(e)}), content_type="application/json")

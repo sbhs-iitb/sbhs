@@ -18,7 +18,7 @@
             <select id="mid">
                 {% for mid in mid_count %}
                 <option id = "{{ mid.2 }}">
-                    {{ mid.0 }}-{{mid.1}}
+                    MID : {{ mid.0 }} &emsp;&emsp;USER COUNT : {{mid.1}}
                 </option>
                 {% endfor %}
             </select>
@@ -31,8 +31,8 @@
         
     function updateMID() {
         $("#update-btn").prop('disabled',true);
-var BASE_URL = window.location.origin + "/sbhs-rpi";
-        var username = $("#username").val();
+        var BASE_URL = window.location.origin + "/sbhs-rpi";
+        var username = $("#username").val().split(" ")[0];
         var board_id = $("#mid").children(":selected").attr("id");
 
         if(username == "")
@@ -54,6 +54,8 @@ var BASE_URL = window.location.origin + "/sbhs-rpi";
             if(data.status_code == 200) {
                 alert(data.message);
                 $("#update-btn").prop('disabled',false);
+                sessionStorage.setItem("sbhsuser"+username, [username, board_id]);
+                $("#username").val("");
                 location.reload();
             }
             else {
@@ -84,8 +86,8 @@ var BASE_URL = window.location.origin + "/sbhs-rpi";
     }
 
     function populateUsers(data) {
-        for (username of data) {
-            sessionStorage.setItem("sbhsuser"+username, username);
+        for (user of data) {
+            sessionStorage.setItem("sbhsuser"+user[0], [user[0], user[1]]);
         } 
     }
 
@@ -103,14 +105,13 @@ var BASE_URL = window.location.origin + "/sbhs-rpi";
             }
             options = "";
             for (matchedUser of matchedUsers) {
-                options += "<option>" + matchedUser + "</option>";
+                options += "<option>" + matchedUser.split(",")[0] + "  (" + matchedUser.split(",")[1] + ")" + "</option>";
             }
             if (options.length != 0) {
                 document.getElementById("users").innerHTML = options;
             }    
         }
     }
-
     appendUsers();
     </script>
 </div>
