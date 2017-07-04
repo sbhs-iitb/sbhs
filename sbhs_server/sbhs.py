@@ -113,7 +113,7 @@ class Sbhs:
 
         try:
             self._write(chr(INCOMING_HEAT))
-            sleep(0.5)
+            sleep(0.1)
             self._write(chr(val))
             return True
         except:
@@ -128,7 +128,7 @@ class Sbhs:
             return False
         try:
             self._write(chr(INCOMING_FAN))
-            sleep(0.5)
+            sleep(0.1)
             self._write(chr(val))
             return True
         except:
@@ -153,7 +153,7 @@ class Sbhs:
         try:
             self.boardcon.flushInput()
             self._write(chr(OUTGOING_MACHINE_ID))
-            sleep(0.5) 
+            sleep(0.1) 
             machine_id = ord(self._read(1))
             return machine_id
         except:
