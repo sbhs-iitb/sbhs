@@ -14,7 +14,7 @@ import sbhs_server.credentials as credentials
 
 
 hostname = socket.gethostname()
-is_production = hostname == "vlabs-Veriton-Series"
+is_production = hostname == "vlabssbhs"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
@@ -42,13 +42,13 @@ ALLOWED_HOSTS = [
     "10.42.0.1",
 ]
 
-if not DEBUG:
+if is_production:
     ALLOWED_HOSTS = [
         "localhost",
         "127.0.0.1",
         "vlabs.iitb.ac.in",
         "vlabs.iitb.ac.in.",
-        "10.102.152.15",
+        "10.102.152.16",
     ]
 
 # Application definition
@@ -99,7 +99,7 @@ WSGI_APPLICATION = 'sbhs_server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.6/ref/settings/#databases
 
-if not is_production:
+if is_production:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql', 
@@ -132,14 +132,14 @@ USE_L10N = True
 USE_TZ = False
 
 AUTH_USER_MODEL = 'tables.Account'
-LOGIN_URL = '/sbhs/enter'
-LOGOUT_URL = '/sbhs/logout'
+LOGIN_URL = '/sbhs-rpi/enter'
+LOGOUT_URL = '/sbhs-rpi/logout'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 CSRF_COOKIE_NAME = "pfesgbxra"
 SESSION_COOKIE_NAME = "frffvbaVq"
 
-EMAIL_HOST = 'smtp.gmail.com' #'smtp-auth.iitb.ac.in'
-EMAIL_PORT = 587 #25
+EMAIL_HOST = 'smtp-auth.iitb.ac.in'
+EMAIL_PORT = 25
 EMAIL_HOST_USER = credentials.EMAIL_HOST_USER
 EMAIL_HOST_PASSWORD = credentials.EMAIL_HOST_PASSWORD
 ADMIN_EMAIL=credentials.ADMIN_EMAIL
@@ -150,8 +150,8 @@ ADMIN_EMAIL=credentials.ADMIN_EMAIL
 
 
 if is_production:
-    BASE_URL = "http://vlabs.iitb.ac.in/sbhs/"
-    FORCE_SCRIPT_NAME = "/sbhs"
+    BASE_URL = "http://vlabs.iitb.ac.in/sbhs-rpi/"
+    FORCE_SCRIPT_NAME = "/sbhs-rpi"
     USE_X_FORWARDED_HOST = True
 else:
     BASE_URL = "http://127.0.0.1/"
@@ -164,13 +164,9 @@ STATICFILES_DIRS = (
 
 if is_production:
     STATIC_ROOT = os.path.join(BASE_DIR, "production_static_files")
-    STATIC_URL = 'http://vlabs.iitb.ac.in/sbhs/static/'
+    STATIC_URL = 'http://vlabs.iitb.ac.in/sbhs-rpi/static/'
 else:
     STATIC_URL = '/static/'
-
-# TEMPLATE_DIRS = (
-#     os.path.join(BASE_DIR, 'pages/templates/'),
-# )
 
 TEMPLATES = [
     {
@@ -243,10 +239,7 @@ WEBCAM_STATIC_DIR = 'img/webcam/'
 
 if not is_production:
     SBHS_ADMINS = (
-        # ("Amol Mandhane", "+91-9999999999", "amol_mandhane@iitb.ac.in"),
-        # ("Amol Mandhane", "+91-9999999999", "amol_mandhane@iitb.ac.in"),
-        ('Debakanta Kar' , '0123456789' , 'kar.bubu.15@gmail.com'),
-        ('Deep Bhattacharyya' , '9876543210' , 'cr7.rick@gmail.com')
+        ('Rupak Rokade' , '+91-9960447251' , 'rupakrokade@gmail.com')
     )
 else:
     from sbhs_server.sbhs_admin_config import SBHS_ADMINS
@@ -263,8 +256,4 @@ online_mids = list(pi_ip_map.keys())
 print "No of machines online : ", len(online_mids)
 
 import sys
-print >>sys.stderr, online_mids[:] #srikant
-#srikant
-#f = open(os.path.join(BASE_DIR, 'maintenance/online_mids.txt'), 'w')
-#f.write(online_mids)
-#f.close()
+print >>sys.stderr, online_mids[:]
