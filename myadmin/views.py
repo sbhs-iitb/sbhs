@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Count
 from django.db import connection
 from django.core.exceptions import ObjectDoesNotExist
-from sbhs_server.tables.models import Board, Booking, Slot, Experiment, Account
+from sbhs_server.tables.models import Board, Booking, Slot, Experiment, Account, Webcam
 from sbhs_server import settings,sbhs
 import subprocess,json,serial,os, datetime, requests
 # Create your views here.
@@ -42,7 +42,9 @@ def booking_index(req):
 @login_required(redirect_field_name=None)
 def webcam_index(req):
     checkadmin(req)
-    boards = Board.objects.all()
+    boards = Board.objects.filter(online=True)
+    for board in boards:
+        Webcam.load_image(board.mid)
     return render(req, 'admin/webcam_index.html', {"boards": boards})
 
 @login_required(redirect_field_name=None)

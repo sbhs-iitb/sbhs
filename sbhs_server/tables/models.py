@@ -258,3 +258,18 @@ class Experiment(TrashableMixin):
 
     created_at          = models.DateTimeField(auto_now_add=True, editable=False)
     updated_at          = models.DateTimeField(auto_now=True, editable=False)
+
+class Webcam():
+    """
+    Utility function to capture webcam feeds using streamer
+    """
+    def __init__(self):
+        pass
+
+    @classmethod
+    def load_image(className,mid):
+        
+        if int(mid) :
+            command = "timeout 2s streamer -q -f jpeg -c /dev/video" + str(mid)
+            command += " -o " + settings.WEBCAM_DIR + "image" + str(mid) + ".jpeg"
+            os.system(command)
