@@ -263,22 +263,17 @@ class Experiment(TrashableMixin):
 
 
 class Webcam():
-    """docstring for Webcam"""
+    """
+    Utility function to capture webcam feeds
+    """
     def __init__(self):
         pass
 
     @classmethod
     def load_image(className,mid):
-        # for images on server 15, it will gstream the photos on reload
         
-        if int(mid) :#in range(0,15):
-            command = "streamer -q -f jpeg -c /dev/video" + str(mid)
+        if int(mid) :
+            command = "timeout 2s streamer -q -f jpeg -c /dev/video" + str(mid)
             command += " -o " + settings.WEBCAM_DIR + "image" + str(mid) + ".jpeg"
             os.system(command)
 
-        else :
-            take_snapshot = requests.get("http://10.102.152.16:8080/webcams/%d/take_snapshot" % int(mid))
-            get_image_link = "http://10.102.152.16:8080/webcams/%d/get_image_data"  % int(mid)
-            
-            command = "curl -s %s > %s/image%d.jpeg" % (get_image_link, str(settings.WEBCAM_DIR), int(mid))
-            os.system(command)
