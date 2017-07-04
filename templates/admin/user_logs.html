@@ -90,7 +90,7 @@
     </div>
 
    <h4 id="file-count"></h4>
-   <table id="logs-table" class="table table-condensed">
+   <table id="logs-table" class="table table-condensed" style="display : none;">
         <thead>
             <tr>
                 <th>Sl No</th>
@@ -157,7 +157,10 @@ function fetchFileNames() {
                 ctr+=1;
             }
             $("#file-count").html(data.message.length + " results found");
-            $("#logs-table tbody").html(htmlContent);
+            if (data.message.length > 0) {
+                $("#logs-table tbody").html(htmlContent);
+                $("#logs-table").show();
+            }
         }
         else {
             alert(data.message);
