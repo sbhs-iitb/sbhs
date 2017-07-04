@@ -134,9 +134,23 @@ def experiment(req):
                 heat = max(min(int(req.POST.get("heat")), 100), 0)
                 fan = max(min(int(req.POST.get("fan")), 100), 0)
 
-                boards[key]["board"].setHeat(heat)
-                boards[key]["board"].setFan(fan)
-                temperature = boards[key]["board"].getTemp()
+                ctr = 0
+                temperature =0
+
+                while not int(temperature) and ctr<3 :
+                    boards[key]["board"].setHeat(heat)
+                    boards[key]["board"].setFan(fan)
+                    temperature = boards[key]["board"].getTemp()
+                    ctr += 1
+                if ctr == 3:
+                    newConnection = sbhs.Sbhs()
+                    success = newConnection.connect(boards[key]["board"].getMachineId())
+                    if success:
+                        boards[key]["board"] = newConnection 
+                    else:
+                        print "Device not responding. MID : " , key
+
+
                 log_data(boards[key]["board"], key, experiment.id, heat=heat, fan=fan, temp=temperature)
 
                 server_end_ts = int(time.time() * 1000)
@@ -156,11 +170,6 @@ def experiment(req):
                 f.write(" ".join(MESSAGE.split(",")[:2]) + "\n")
                 f.close()
             else:
-                # boards[key]["board"].setHeat(0)
-                # boards[key]["board"].setFan(100)
-                # log_data(boards[key]["board"], key)
-                reset(req)
-                
                 STATUS = 0
                 MESSAGE = "Slot has ended. Please book the next slot to continue the experiment."
 
