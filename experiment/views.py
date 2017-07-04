@@ -71,7 +71,6 @@ def client_version(req):
     return HttpResponse("3")
 
 @login_required(redirect_field_name=None)
-    
 def logs(req):
     """ Renders experimental log files to the user interface.
         Input: req:request object.
