@@ -31,7 +31,7 @@
         
     function updateMID() {
         $("#update-btn").prop('disabled',true);
-        var BASE_URL = window.location.origin + "/sbhs";  
+var BASE_URL = window.location.origin + "/sbhs-rpi";
         var username = $("#username").val();
         var board_id = $("#mid").children(":selected").attr("id");
 
@@ -65,7 +65,7 @@
 
     // for live search of usernames
     if (sessionStorage.getItem("fetchedUsers") == null) {
-        var BASE_URL = window.location.origin + "/sbhs";
+var BASE_URL = window.location.origin + "/sbhs-rpi";
         var request = $.ajax({
             url: BASE_URL + '/admin/getusers',
             method: 'POST'
